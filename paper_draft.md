@@ -317,7 +317,7 @@ where $t$ is dynamically reselected at each iteration. OT approximates this by f
 
 ### 6.2 Empirical Confirmation: CE Loss Ablation
 
-Square Attack with margin loss shows **no benefit** from OT: the margin loss already performs dynamic target tracking at every iteration. When we strip this guidance by switching to CE loss, the untargeted attack degrades to 865 mean iterations (vs. 430 for margin), and OT restores near-oracle performance (447 iterations). This confirms that OT functions as a structural surrogate for margin loss, providing the directionality that drift-prone losses lack. The full ablation is reported in Section 7.2.
+Square Attack with margin loss shows **no benefit** from OT (Wilcoxon $p = 0.08$, $N = 74$): the margin loss already performs dynamic target tracking at every iteration. When we strip this guidance by switching to CE loss, the untargeted attack degrades from 98.7% to 85.0% success rate, and mean iterations increase from 1,453 to 2,601. OT restores CE to near-margin performance (98.0% success, 1,791 mean iterations). This confirms that OT functions as a structural surrogate for margin loss, providing the directionality that drift-prone losses lack. The full ablation is reported in Section 7.2.
 
 ### 6.3 Perturbation Alignment (Theta Convergence)
 
@@ -371,17 +371,25 @@ The optimal thresholds differ: $S^*_{\text{SimBA}} = 10$ vs. $S^*_{\text{Square}
 
 ### 7.2 Loss Function Ablation (Square Attack)
 
-The CE-loss ablation on Square Attack isolates OT's contribution from the attack's native loss function (4-image benchmark, mean across all successful runs):
+We isolate OT's contribution from Square Attack's native loss function by comparing margin loss (the attack's default) against CE loss across four configurations (75 images, ResNet-50, 15K budget, $S = 8$; CE data from the 100-image benchmark):
 
-| Configuration | Mean Iters | Success Rate | Notes |
-| -------------- | ----------- | ------------- | ------- |
-| Margin loss, untargeted | 430 | 100% | Implicit dynamic targeting via $\max_{k \neq y}$ |
-| Margin loss + OT | 432 | 100% | No additional benefit; OT is redundant |
-| CE loss, untargeted | 865 | 100% | Drift: 2× the queries of margin |
-| CE loss + OT | 447 | 100% | Restores near-margin performance |
-| CE loss, oracle targeted | 430 | 100% | Upper bound |
+| Configuration | Success Rate | Mean Iters | Median Iters |
+| -------------- | ------------- | ----------- | ------------- |
+| CE untargeted | 85.0% | 2,601 | 335 |
+| CE + OT | 98.0% | 1,791 | 756 |
+| CE oracle targeted | 99.0% | 1,865 | 640 |
+| Margin untargeted | 98.7% | 1,453 | 366 |
+| Margin + OT | 98.7% | 1,583 | 396 |
 
-Margin loss provides built-in target tracking that makes OT unnecessary. CE loss lacks this tracking, resulting in drift. OT compensates for the missing margin term, restoring efficiency to within 4% of the oracle. This confirms OT as a **general-purpose margin surrogate** applicable to any drift-prone loss.
+![Margin CDF](results/figures_margin/fig_margin_cdf.png)
+
+**Figure 15: Loss function ablation.** Success rate vs. query budget for Square Attack on ResNet-50. Margin loss (solid lines) dominates CE loss (dashed lines) across the full budget range. Margin untargeted alone matches CE + OT performance, confirming OT as a margin surrogate.
+
+The results reveal two effects. First, **OT rescues CE loss from drift**: CE untargeted achieves only 85% success with 2,601 mean iterations, while CE + OT reaches 98% success with 1,791 mean iterations — a 13 percentage point success gain and 31% iteration reduction. Without OT, the CE loss disperses perturbation energy across all non-true classes; OT provides the directional commitment that CE lacks.
+
+Second, **OT is redundant with margin loss**: margin untargeted (98.7%, 1,453 mean) matches or exceeds CE + OT (98.0%, 1,791 mean) without any targeting mechanism. Adding OT on top of margin provides no benefit (Wilcoxon $p = 0.08$, $N = 74$ paired successes). This is expected: Square Attack's margin loss already performs dynamic target tracking at every iteration via $\max_{k \neq y} f_k(x')$, making OT's stability-based commitment redundant — and marginally harmful, since locking a target prevents the per-iteration re-selection that margin provides natively.
+
+This confirms OT as a **general-purpose margin surrogate**: it provides the directional guidance that margin loss encodes natively, making it valuable for any drift-prone loss (CE, probability-based) but unnecessary when margin tracking is already built in.
 
 ---
 
@@ -460,11 +468,9 @@ We introduced Opportunistic Targeting, a wrapper that adds dynamic target select
 
 ### 9.3 Future Directions
 
-1. **Margin loss integration.** Testing whether OT provides any benefit when *added on top of* margin loss (rather than replacing it) would clarify whether the two mechanisms are complementary or redundant.
+1. **Extension to other robust training methods.** The targeting neutrality holds for Salman et al. (2020) $L_\infty$ adversarial training, but other defenses (TRADES, MART, $L_2$ training, certified defenses) may exhibit different loss landscape geometries. Testing OT on diverse robust models would establish whether the neutrality is universal.
 
-2. **Extension to other robust training methods.** The targeting neutrality holds for Salman et al. (2020) $L_\infty$ adversarial training, but other defenses (TRADES, MART, $L_2$ training, certified defenses) may exhibit different loss landscape geometries. Testing OT on diverse robust models would establish whether the neutrality is universal.
-
-3. **Larger-scale evaluation.** Testing on the full ImageNet validation set (50K images), additional model families (Vision Transformers, EfficientNets, DenseNets), and non-ImageNet datasets (CIFAR-10, CIFAR-100) would establish OT's generality more conclusively.
+2. **Larger-scale evaluation.** Testing on the full ImageNet validation set (50K images), additional model families (Vision Transformers, EfficientNets, DenseNets), and non-ImageNet datasets (CIFAR-10, CIFAR-100) would establish OT's generality more conclusively.
 
 ### 9.4 Conclusion
 
