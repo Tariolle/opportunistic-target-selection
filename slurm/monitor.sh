@@ -14,28 +14,23 @@ DONE=$(($(wc -l < "$CSV") - 1))
 echo "Progress: ${DONE}/${TOTAL} runs completed"
 echo "========================================"
 
-COUNT=0
+TOTAL_ITERS=0
 START=$(date +%s)
 
 tail -n 0 -f "$CSV" | while IFS=, read -r method t_value image true_label iterations success adv_class switch_iter locked_class timestamp; do
     DONE=$(($(wc -l < "$CSV") - 1))
-    COUNT=$((COUNT + 1))
+    TOTAL_ITERS=$((TOTAL_ITERS + iterations))
     NOW=$(date +%s)
     ELAPSED=$((NOW - START))
-    if [ $COUNT -gt 0 ] && [ $ELAPSED -gt 0 ]; then
-        AVG=$(echo "scale=1; $ELAPSED / $COUNT" | bc)
-        RATE=$(echo "scale=1; $COUNT * 60 / $ELAPSED" | bc)
-        REMAINING=$(echo "scale=0; ($TOTAL - $DONE) * $ELAPSED / $COUNT" | bc)
-        REMAINING_MIN=$(echo "scale=1; $REMAINING / 60" | bc)
+    if [ $ELAPSED -gt 0 ]; then
+        IPS=$(echo "scale=1; $TOTAL_ITERS / $ELAPSED" | bc)
     else
-        AVG="--"
-        RATE="--"
-        REMAINING_MIN="--"
+        IPS="--"
     fi
     [ "$success" = "True" ] && status="OK" || status="FAIL"
     extra=""
     [ -n "$switch_iter" ] && extra=" (switch@${switch_iter}, locked=${locked_class})"
-    printf "[%d/%d] %s T=%-3s | %s | %s iters | %s%s | avg %.1fs/run, %.1f runs/min, ETA %smin\n" \
+    printf "[%d/%d] %s T=%-3s | %s | %s iters | %s%s | %s iter/s\n" \
         "$DONE" "$TOTAL" "$method" "$t_value" "$image" "$iterations" "$status" "$extra" \
-        "$AVG" "$RATE" "$REMAINING_MIN"
+        "$IPS"
 done
