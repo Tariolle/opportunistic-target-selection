@@ -27,10 +27,10 @@ from src.utils.imaging import (
     IMAGENET_MEAN,
     IMAGENET_STD
 )
-from src.attacks import SimBA, SquareAttack
+from src.attacks import SimBA, SquareAttack, BanditsAttack
 
 # Standard torchvision model choices
-STANDARD_MODELS = ["resnet18", "resnet34", "resnet50", "vgg16", "vgg19", "alexnet"]
+STANDARD_MODELS = ["resnet18", "resnet34", "resnet50", "vgg16", "vgg19", "alexnet", "vit_b_16"]
 
 
 # Global model cache
@@ -335,6 +335,15 @@ def run_attack(
                 normalize=False,
                 seed=seed,
             )
+        elif method == "Bandits":
+            attack = BanditsAttack(
+                model=model,
+                epsilon=epsilon,
+                max_iterations=max_iterations,
+                device=_device,
+                pixel_range=(0.0, 1.0),
+                seed=seed,
+            )
         else:
             return None, None, None, f"Unknown attack method: {method}"
         
@@ -549,7 +558,7 @@ def create_demo_interface():
                 gr.Markdown("### Attack Configuration")
                 
                 method_dropdown = gr.Dropdown(
-                    choices=["SimBA", "Square Attack"],
+                    choices=["SimBA", "Square Attack", "Bandits"],
                     value="Square Attack",
                     label="Attack Method",
                     info="Select the adversarial attack method"

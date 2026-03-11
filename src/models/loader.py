@@ -63,6 +63,7 @@ def load_pretrained_model(
         'alexnet': models.alexnet,
         'mobilenet_v2': models.mobilenet_v2,
         'densenet121': models.densenet121,
+        'vit_b_16': models.vit_b_16,
     }
     
     if model_name not in model_constructors:

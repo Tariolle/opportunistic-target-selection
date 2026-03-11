@@ -30,20 +30,21 @@ from torchvision import transforms
 from src.models.loader import load_pretrained_model, load_robustbench_model, NormalizedModel
 from src.attacks.simba import SimBA
 from src.attacks.square import SquareAttack
+from src.attacks.bandits import BanditsAttack
 from src.utils.imaging import IMAGENET_MEAN, IMAGENET_STD
 
 # ===========================================================================
 # Configuration
 # ===========================================================================
-STANDARD_MODELS = ['resnet18', 'resnet50', 'vgg16', 'alexnet']
+STANDARD_MODELS = ['resnet18', 'resnet50', 'vgg16', 'alexnet', 'vit_b_16']
 ROBUST_MODELS = ['Salman2020Do_R18', 'Salman2020Do_R50']
 
 EPSILONS = [8 / 255]
 SEEDS = [0]
 MAX_ITERATIONS = 10_000
 STABILITY_THRESHOLD = {
-    'standard': {'SimBA': 10, 'SquareAttack': 8},
-    'robust': {'SimBA': 10, 'SquareAttack': 10},
+    'standard': {'SimBA': 10, 'SquareAttack': 8, 'Bandits': 15},
+    'robust': {'SimBA': 10, 'SquareAttack': 10, 'Bandits': 15},
 }
 VAL_DIR = Path('data/imagenet/val')
 RESULTS_DIR = Path('results')
@@ -154,6 +155,15 @@ def create_attack(method: str, model, epsilon: float, seed: int, device):
             device=device,
             loss='ce',
             normalize=False,
+            seed=seed,
+        )
+    elif method == 'Bandits':
+        return BanditsAttack(
+            model=model,
+            epsilon=epsilon,
+            max_iterations=5000,  # 2 queries/iter → 10K query budget
+            device=device,
+            pixel_range=(0.0, 1.0),
             seed=seed,
         )
     else:
@@ -617,7 +627,7 @@ def main():
     if existing_keys:
         print(f"Resuming: found {len(existing_keys)} existing results")
 
-    methods = ['SimBA', 'SquareAttack']
+    methods = ['SimBA', 'SquareAttack', 'Bandits']
     total_runs = len(models) * len(image_paths) * len(methods) * len(EPSILONS) * len(SEEDS) * 3
     print(f"Total runs (this part): {total_runs}")
     print("=" * 80)
