@@ -239,7 +239,7 @@ def main():
     model = load_benchmark_model(MODEL_NAME, SOURCE, device)
 
     if torch.cuda.is_available():
-        model = torch.compile(model, mode="reduce-overhead")
+        model = torch.compile(model)
 
     print(f"Selecting {args.n_images} images from {VAL_DIR}...")
     image_paths = select_images(VAL_DIR, args.n_images, args.image_seed)
@@ -307,6 +307,9 @@ def main():
         append_row(row, CSV_PATH)
         completed += 1
 
+        run_time = time.time() - start_time
+        avg_time = run_time / (completed - (total_runs - len(jobs)))
+        eta = avg_time * (total_runs - completed)
         status = 'OK' if result['success'] else 'FAIL'
         extra = ''
         if result['switch_iteration'] is not None:
@@ -314,7 +317,8 @@ def main():
                      f"locked={result['locked_class']})")
         print(f"[{completed}/{total_runs}] {method} T={t_label} | "
               f"{image_name} | {result['iterations']} iters | "
-              f"{status}{extra}")
+              f"{status}{extra} | "
+              f"{run_time:.0f}s elapsed, ETA {eta:.0f}s")
 
     elapsed = time.time() - start_time
     print(f"\n{'='*70}")
