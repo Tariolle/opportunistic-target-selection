@@ -1,9 +1,11 @@
 #!/bin/bash
-# Watch ablation progress: formats new CSV lines as they arrive.
-# Usage: bash slurm/monitor.sh
+# Watch benchmark progress: formats new CSV lines as they arrive.
+# Usage:
+#   bash slurm/monitor.sh                          # standard benchmark (4500 runs)
+#   bash slurm/monitor.sh results/other.csv 1600   # custom CSV + total
 
-CSV="results/benchmark_ablation_naive.csv"
-TOTAL=1600
+CSV="${1:-results/benchmark_standard.csv}"
+TOTAL="${2:-4500}"
 
 if [ ! -f "$CSV" ]; then
     echo "Waiting for $CSV to appear..."
@@ -17,7 +19,7 @@ echo "========================================"
 TOTAL_ITERS=0
 START=$(date +%s)
 
-tail -n 0 -f "$CSV" | while IFS=, read -r method t_value image true_label iterations success adv_class switch_iter locked_class timestamp; do
+tail -n 0 -f "$CSV" | while IFS=, read -r model method epsilon seed image mode iterations success rest; do
     DONE=$(($(wc -l < "$CSV") - 1))
     TOTAL_ITERS=$((TOTAL_ITERS + iterations))
     NOW=$(date +%s)
@@ -28,9 +30,6 @@ tail -n 0 -f "$CSV" | while IFS=, read -r method t_value image true_label iterat
         IPS="--"
     fi
     [ "$success" = "True" ] && status="OK" || status="FAIL"
-    extra=""
-    [ -n "$switch_iter" ] && extra=" (switch@${switch_iter}, locked=${locked_class})"
-    printf "[%d/%d] %s T=%-3s | %s | %s iters | %s%s | %s iter/s\n" \
-        "$DONE" "$TOTAL" "$method" "$t_value" "$image" "$iterations" "$status" "$extra" \
-        "$IPS"
+    printf "[%d/%d] %s | %s | %s | %s | %s iters | %s | %s iter/s\n" \
+        "$DONE" "$TOTAL" "$model" "$method" "$mode" "$image" "$iterations" "$status" "$IPS"
 done
