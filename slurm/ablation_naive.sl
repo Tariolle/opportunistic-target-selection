@@ -22,4 +22,5 @@ module load aidl/pytorch/2.6.0-cuda12.6
 #   python -c "import torchvision; torchvision.models.resnet50(weights='IMAGENET1K_V1')"
 python -c "import torchattacks, robustbench" 2>/dev/null || pip install --user -r requirements-hpc.txt
 
-python benchmark_ablation_naive.py
+echo "Starting benchmark at $(date)"
+python -u benchmark_ablation_naive.py
