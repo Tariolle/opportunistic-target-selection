@@ -15,6 +15,11 @@
 
 module purge
 module load aidl/pytorch/2.6.0-cuda12.6
-pip install --user -r requirements-hpc.txt
+# Install deps only if missing (git-based deps like robustbench re-clone every time otherwise).
+# Run once on the login node first:
+#   module load aidl/pytorch/2.6.0-cuda12.6
+#   pip install --user -r requirements-hpc.txt
+#   python -c "import torchvision; torchvision.models.resnet50(weights='IMAGENET1K_V1')"
+python -c "import torchattacks, robustbench" 2>/dev/null || pip install --user -r requirements-hpc.txt
 
 python benchmark_ablation_naive.py
