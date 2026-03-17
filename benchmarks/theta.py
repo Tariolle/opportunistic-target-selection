@@ -14,6 +14,8 @@ Usage:
     python analyze_theta.py --n-images 2 --show   # Smoke test
 """
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import os
 from pathlib import Path

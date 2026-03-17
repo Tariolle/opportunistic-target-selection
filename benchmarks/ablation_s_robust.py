@@ -14,6 +14,8 @@ Usage:
     python benchmark_ablation_s_robust.py --clear --part 1       # clear + run
 """
 
+import sys, os
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 import argparse
 import csv
 import time
