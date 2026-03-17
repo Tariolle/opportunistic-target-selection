@@ -6,7 +6,26 @@ A Rank-Stability Heuristic for Query-Efficient Black-Box Adversarial Attacks
 
 **Opportunistic Targeting (OT)** is a lightweight wrapper that adds dynamic target selection to any score-based black-box adversarial attack. It monitors the rank stability of the leading non-true class during an untargeted attack and switches to a targeted objective once a stable candidate emerges. OT requires no architectural modification, no gradient access, and no a priori target-class knowledge.
 
-See [`paper_draft.md`](paper_draft.md) for the full paper.
+See [`paper/main.tex`](paper/main.tex) for the full paper.
+
+---
+
+## Project Structure
+
+```
+src/                    Core library
+  attacks/              Attack implementations (SimBA, SquareAttack, Bandits)
+  models/               Model loaders (torchvision, RobustBench)
+  utils/                Image preprocessing & visualization
+  demo/                 Gradio demonstrator app
+demo/                   Demo entry point
+benchmarks/             Benchmark scripts (generate CSV results)
+analysis/               Analysis scripts (generate figures from CSVs)
+slurm/                  HPC job scripts (CRIANN Arctic)
+paper/                  LaTeX paper
+results/                Benchmark CSVs and figures
+data/                   ImageNet class index and demo images
+```
 
 ---
 
@@ -14,22 +33,15 @@ See [`paper_draft.md`](paper_draft.md) for the full paper.
 
 1. **Install dependencies**
 
-    **With GPU (NVIDIA CUDA 12.1):**
-
     ```bash
-    pip install -r requirements-gpu.txt
-    ```
-
-    **CPU only:**
-
-    ```bash
-    pip install -r requirements-cpu.txt
+    pip install -r requirements-gpu.txt   # With GPU (NVIDIA CUDA)
+    pip install -r requirements-cpu.txt   # CPU only
     ```
 
 2. **Launch the demonstrator**
 
     ```bash
-    python launch_demo.py
+    python demo/launch.py
     ```
 
 3. **Access the interface**
@@ -39,29 +51,32 @@ See [`paper_draft.md`](paper_draft.md) for the full paper.
 
 ## Benchmarks
 
-**Multi-model benchmark** (`benchmark.py`): evaluates OT across 4 standard ImageNet classifiers (AlexNet, ResNet-18, VGG-16, ResNet-50) and 2 adversarially-trained models, with 3 seeds per configuration.
-
-**ResNet-50 in-depth benchmark** (`benchmark_winrate.py`): 100-image evaluation on ResNet-50 with bootstrapped CDF curves.
-
-**Stability threshold ablation** (`benchmark_ablation_s.py`): sweeps $S \in \{2, 3, 5, 8, 10, 12, 15\}$ on ResNet-50.
-
-**Robust model stability threshold ablation** (`benchmark_ablation_s_robust.py`): sweeps $S \in \{2, 3, 5, 8, 10, 12, 15\}$ on adversarially-trained ResNet-50.
-
-**Theta convergence** (`benchmark_theta.py`): computes perturbation alignment with oracle direction over 100 images on ResNet-50.
+| Script | Description |
+|--------|-------------|
+| `benchmarks/benchmark.py` | Multi-model benchmark: 5 standard models + 2 robust models, 3 attacks, 3 modes |
+| `benchmarks/winrate.py` | ResNet-50 CDF benchmark: 100 images, 15K budget, bootstrapped CI |
+| `benchmarks/ablation_s.py` | Stability threshold sweep S={2..15} on standard ResNet-50 |
+| `benchmarks/ablation_s_robust.py` | Stability threshold sweep on robust ResNet-50 |
+| `benchmarks/ablation_naive.py` | Naive fixed-iteration switching vs OT (standard and robust) |
+| `benchmarks/margin.py` | Margin vs CE loss ablation on SquareAttack |
+| `benchmarks/landscape.py` | Per-iteration confidence history collection |
+| `benchmarks/theta.py` | Perturbation alignment with oracle direction |
 
 ```bash
-python benchmark.py
-python benchmark_winrate.py
-python benchmark_ablation_s.py
-python benchmark_ablation_s_robust.py
-python benchmark_theta.py
+python benchmarks/benchmark.py
+python benchmarks/winrate.py
 ```
+
+## Analysis
 
 Regenerate figures from benchmark CSVs:
 
 ```bash
-python analyze_benchmark.py
-python analyze_winrate.py
-python analyze_ablation_s.py
-python analyze_ablation_s_robust.py
+python analysis/analyze_benchmark.py
+python analysis/analyze_winrate.py
+python analysis/analyze_ablation_s.py
+python analysis/analyze_ablation_naive.py
+python analysis/analyze_margin.py
+python analysis/analyze_lockmatch.py
+python analysis/analyze_oracle_beat.py
 ```
