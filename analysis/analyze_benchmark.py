@@ -854,6 +854,8 @@ def fig_lockin(outdir: str, source: str = "standard", device_str: str = "cuda",
                csv_path: str | None = None):
     """Lock-in dynamics case study: side-by-side SquareAttack & SimBA."""
     import torch
+    import sys, os
+    sys.path.insert(0, os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), "benchmarks"))
     from benchmark import load_benchmark_model, load_benchmark_image, get_true_label
 
     device = torch.device(device_str if torch.cuda.is_available() else "cpu")
@@ -863,8 +865,9 @@ def fig_lockin(outdir: str, source: str = "standard", device_str: str = "cuda",
         csv_path = f"results/benchmark_{source}.csv"
 
     # Pick the best showcase images from benchmark data
+    bench_df = pd.read_csv(csv_path)
     cases = []
-    for method in [m for m in METHODS if m in df["method"].unique()]:
+    for method in [m for m in METHODS if m in bench_df["method"].unique()]:
         img_name, seed = _best_ot_image(csv_path, model_name, method)
         img_path = _resolve_image_path(img_name)
         short = "Square Attack" if method == "SquareAttack" else method
@@ -879,7 +882,10 @@ def fig_lockin(outdir: str, source: str = "standard", device_str: str = "cuda",
     print(f"  Loading model for replay ({model_name}, {source}) ...")
     model = load_benchmark_model(model_name, source, device)
 
-    fig, axes = plt.subplots(1, 2, figsize=(12, 4.5))
+    n_cases = len(cases)
+    fig, axes = plt.subplots(1, n_cases, figsize=(6 * n_cases, 4.5))
+    if n_cases == 1:
+        axes = [axes]
 
     for ax, case in zip(axes, cases):
         print(f"  Replaying {case['method']} on {case['image'].name} (seed={case['seed']}) ...")
