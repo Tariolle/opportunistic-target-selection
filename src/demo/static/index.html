@@ -117,6 +117,10 @@ body {
     border-radius: 10px;
     border: 1px solid var(--glass-border);
     overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 24px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+[data-theme="light"] .panel {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
 }
 
 /* Config panel */
@@ -126,6 +130,11 @@ body {
     display: flex;
     flex-direction: column;
     gap: 7px;
+}
+.config > div {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
 }
 
 /* Form elements */
@@ -229,7 +238,7 @@ select:focus, input:focus { outline: none; border-color: var(--accent-muted); }
     font-weight: 500;
 }
 
-.slider-row { display: flex; flex-direction: column; gap: 2px; }
+.slider-row { display: flex; flex-direction: column; gap: 6px; }
 .slider-header { display: flex; justify-content: space-between; align-items: center; }
 .slider-val {
     font-size: 0.8rem;
@@ -239,21 +248,40 @@ select:focus, input:focus { outline: none; border-color: var(--accent-muted); }
 }
 input[type="range"] {
     width: 100%;
-    height: 3px;
+    height: 6px;
     -webkit-appearance: none;
     background: var(--glass-border);
-    border-radius: 2px;
+    border-radius: 9999px;
     outline: none;
+    position: relative;
 }
 input[type="range"]::-webkit-slider-thumb {
     -webkit-appearance: none;
-    width: 12px; height: 12px;
+    width: 16px; height: 16px;
     border-radius: 50%;
-    background: var(--text);
+    background: var(--bg);
+    border: 2px solid var(--text);
     cursor: pointer;
-    transition: transform 0.15s;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+    transition: transform 0.15s, box-shadow 0.15s;
 }
-input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
+input[type="range"]::-webkit-slider-thumb:hover {
+    transform: scale(1.1);
+    box-shadow: 0 2px 6px rgba(0,0,0,0.25);
+}
+input[type="range"]::-moz-range-thumb {
+    width: 16px; height: 16px;
+    border-radius: 50%;
+    background: var(--bg);
+    border: 2px solid var(--text);
+    cursor: pointer;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+}
+input[type="range"]::-moz-range-track {
+    height: 6px;
+    background: var(--glass-border);
+    border-radius: 9999px;
+}
 
 .checkbox-row { display: flex; align-items: center; gap: 6px; }
 .checkbox-row input[type="checkbox"] { accent-color: var(--text); width: 15px; height: 15px; }
@@ -319,6 +347,94 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     transition: left 0.35s cubic-bezier(0.22, 1.2, 0.36, 1), width 0.35s cubic-bezier(0.22, 1.2, 0.36, 1);
 }
 
+/* Disabled group (dimmed, non-interactive) */
+.disabled-group { opacity: 0.3; cursor: not-allowed; }
+.disabled-group * { pointer-events: none; }
+.disabled-group.enabled { opacity: 1; cursor: auto; }
+.disabled-group.enabled * { pointer-events: auto; }
+
+/* Number counter (target class) */
+.num-counter {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border-radius: 1rem;
+    transition: color 0.3s ease;
+}
+.num-counter.flash-up { color: #4ade80; }
+.num-counter.flash-down { color: #ef4444; }
+.num-counter-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px; height: 36px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    color: var(--text-muted);
+    transition: color 0.3s ease;
+}
+.num-counter-btn:hover { color: var(--text); }
+.num-counter-btn.active-up { color: #4ade80; }
+.num-counter-btn.active-down { color: #ef4444; }
+.num-counter-btn:disabled { opacity: 0.2; cursor: not-allowed; }
+.num-counter-btn svg { width: 24px; height: 24px; }
+.num-counter-val {
+    font-size: 1.8rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 3.5ch;
+    text-align: center;
+    color: var(--text);
+    transition: color 0.3s ease;
+    cursor: text;
+    border-radius: 6px;
+    padding: 2px 4px;
+    overflow: hidden;
+    position: relative;
+    height: 2.2em;
+    line-height: 2.2em;
+}
+.num-counter-val.slide-up {
+    animation: num-slide-up 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.num-counter-val.slide-down {
+    animation: num-slide-down 0.25s cubic-bezier(0.22, 1, 0.36, 1);
+}
+@keyframes num-slide-up {
+    0%   { transform: translateY(100%); opacity: 0; }
+    100% { transform: translateY(0);    opacity: 1; }
+}
+@keyframes num-slide-down {
+    0%   { transform: translateY(-100%); opacity: 0; }
+    100% { transform: translateY(0);     opacity: 1; }
+}
+.num-counter-val:hover { opacity: 0.7; }
+.num-counter-input {
+    font-size: 1.8rem;
+    font-weight: 600;
+    font-family: 'JetBrains Mono', monospace;
+    min-width: 3.5ch;
+    text-align: center;
+    color: var(--text);
+    background: transparent;
+    border: none;
+    padding: 2px 4px;
+    outline: none;
+    caret-color: var(--accent-muted);
+    -moz-appearance: textfield;
+}
+.num-counter-input::-webkit-inner-spin-button,
+.num-counter-input::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+.num-counter-label {
+    font-size: 0.7rem;
+    color: var(--text-muted);
+    text-align: center;
+    margin-top: 2px;
+}
+
 .divider { border-top: 1px solid var(--glass-border); margin: 4px 0; }
 
 /* Run button — Copia hero CTA style */
@@ -375,6 +491,8 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     flex-direction: column;
     gap: 6px;
     padding: 10px;
+    min-height: 0;
+    min-width: 0;
 }
 
 .drop-zone {
@@ -392,11 +510,13 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     overflow: hidden;
 }
 .drop-zone:hover, .drop-zone.dragover { border-color: var(--accent-muted); }
-.drop-zone img {
-    max-width: 100%;
-    max-height: 100%;
-    object-fit: contain;
-    border-radius: 6px;
+.drop-zone > img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: 10px;
 }
 .drop-zone .placeholder { color: var(--text-muted); font-size: 12px; text-align: center; opacity: 0.6; }
 .drop-zone .placeholder svg { width: 28px; height: 28px; margin-bottom: 6px; opacity: 0.4; }
@@ -428,12 +548,17 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .examples-row img:hover { border-color: var(--accent-muted); opacity: 1; }
 .examples-row img.active { border-color: var(--text); opacity: 1; }
 
-/* Output panel (2x2 grid) */
+/* Output panel (3 cells) */
 .output-panel {
     display: grid;
     grid-template-columns: 1fr 1fr;
     grid-template-rows: 1fr 1fr;
     gap: 6px;
+    min-width: 0;
+    min-height: 0;
+}
+.output-panel .output-cell:first-child {
+    grid-column: 1 / -1;
 }
 
 .output-cell {
@@ -443,8 +568,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     padding: 8px;
     display: flex;
     flex-direction: column;
+    align-items: center;
     min-height: 0;
+    min-width: 0;
     overflow: hidden;
+    box-shadow: 0 0 0 1px rgba(255,255,255,0.06), 0 24px 64px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.12);
+}
+[data-theme="light"] .output-cell {
+    box-shadow: 0 16px 40px rgba(0,0,0,0.08);
 }
 .output-cell .cell-label {
     font-size: 0.7em;
@@ -457,10 +588,10 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .output-cell img {
     flex: 1;
     min-height: 0;
+    max-width: 100%;
+    max-height: 100%;
     object-fit: contain;
     border-radius: 6px;
-    max-width: 224px;
-    max-height: 224px;
     align-self: center;
 }
 .output-cell .empty {
@@ -478,12 +609,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
 .results-text {
     flex: 1;
     overflow-y: auto;
-    font-size: 12px;
+    font-size: 0.8rem;
+    font-family: 'Outfit', sans-serif;
     line-height: 1.7;
     min-height: 0;
     color: var(--text-muted);
+    letter-spacing: 0.02em;
 }
-.results-text strong { color: var(--text); }
+.results-text strong { color: var(--text); font-weight: 500; }
 
 /* Spinner overlay */
 .spinner-overlay {
@@ -573,6 +706,81 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
     100% { transform: translate(-1px, 0)    skewX(0deg);  opacity: 1; }
 }
 
+/* Image comparison slider */
+.img-compare {
+    position: relative;
+    width: 100%;
+    flex: 1;
+    min-height: 0;
+    overflow: hidden;
+    border-radius: 10px;
+    user-select: none;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+}
+.img-compare .compare-before {
+    display: block;
+    width: 100%; height: 100%;
+    object-fit: cover;
+}
+.img-compare .compare-after-wrap {
+    position: absolute;
+    top: 0; left: 0;
+    width: 100%; height: 100%;
+    overflow: hidden;
+    clip-path: inset(0 var(--clip-right, 50%) 0 0);
+}
+.img-compare .compare-after {
+    width: 100%; height: 100%;
+    object-fit: cover;
+}
+.img-compare .compare-handle {
+    position: absolute;
+    top: 0; bottom: 0;
+    width: 6px;
+    background: rgba(255,255,255,0.8);
+    left: var(--handle-left, 50%);
+    transform: translateX(-50%);
+    z-index: 2;
+    cursor: ew-resize;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.img-compare .compare-knob {
+    width: 48px; height: 48px;
+    background: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.img-compare.dragging .compare-knob {
+    transform: scale(1.1);
+    box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+}
+.img-compare .compare-knob svg {
+    color: #374151;
+    width: 24px; height: 24px;
+}
+.img-compare .compare-label {
+    position: absolute;
+    bottom: 10px;
+    padding: 3px 10px;
+    border-radius: 9999px;
+    font-size: 0.7rem;
+    font-weight: 500;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    background: rgba(0,0,0,0.55);
+    color: #fff;
+    z-index: 3;
+    backdrop-filter: blur(4px);
+}
+.img-compare .label-before { left: 10px; }
+.img-compare .label-after { right: 10px; }
+
 /* Hidden elements */
 .hidden { display: none !important; }
 </style>
@@ -630,7 +838,7 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
                 </div>
             </div>
 
-            <div id="loss-group" class="hidden">
+            <div id="loss-group" class="disabled-group">
                 <label>Loss</label>
                 <div class="tab-toggle" id="loss-toggle">
                     <button class="tab-toggle-btn active" data-value="ce">Cross-Entropy</button>
@@ -675,9 +883,18 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
             </div>
 
             <div id="target-group" class="hidden">
-                <label>Target Class (0-999)</label>
-                <input type="number" id="target-class" min="0" max="999" value="0">
-                <div style="font-size:11px; color:#6b7280; margin-top:2px;" id="target-label"></div>
+                <label>Target Class</label>
+                <div class="num-counter" id="num-counter">
+                    <button class="num-counter-btn" id="target-down">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+                    </button>
+                    <div class="num-counter-val" id="target-val">42</div>
+                    <button class="num-counter-btn" id="target-up">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+                    </button>
+                </div>
+                <div class="num-counter-label" id="target-label"></div>
+                <input type="hidden" id="target-class" value="42">
             </div>
 
             <div id="ot-group">
@@ -715,6 +932,25 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
                     <div>Drop image here or click to upload</div>
                 </div>
                 <img id="input-preview" class="hidden" alt="Input">
+                <!-- Comparison slider (shown after attack) -->
+                <div class="img-compare hidden" id="img-compare">
+                    <!-- Before (bottom layer, block element) -->
+                    <img id="compare-before" class="compare-before" alt="Original" draggable="false">
+                    <!-- After (top layer, clipped) -->
+                    <div class="compare-after-wrap">
+                        <img id="compare-after" class="compare-after" alt="Adversarial" draggable="false">
+                    </div>
+                    <!-- Handle -->
+                    <div class="compare-handle" id="compare-handle">
+                        <div class="compare-knob">
+                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="15" y1="18" x2="9" y2="12"/><line x1="9" y1="6" x2="15" y2="12"/>
+                            </svg>
+                        </div>
+                    </div>
+                    <span class="compare-label label-before">Original</span>
+                    <span class="compare-label label-after">Adversarial</span>
+                </div>
             </div>
             <div class="prediction" id="prediction-text"></div>
             <div class="examples-row" id="examples-row"></div>
@@ -723,19 +959,14 @@ input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.2); }
         <!-- Output panel (2x2) -->
         <div class="output-panel" style="position:relative;">
             <div class="output-cell">
-                <div class="cell-label">Adversarial</div>
-                <img id="adv-img" class="hidden" alt="Adversarial">
-                <div class="empty" id="adv-empty">Run an attack</div>
+                <div class="cell-label">Confidence Evolution</div>
+                <img id="conf-graph" class="hidden" alt="Confidence">
+                <div class="empty" id="conf-empty">Run an attack</div>
             </div>
             <div class="output-cell">
                 <div class="cell-label">Perturbation</div>
                 <img id="pert-img" class="hidden" alt="Perturbation">
                 <div class="empty" id="pert-empty">Run an attack</div>
-            </div>
-            <div class="output-cell">
-                <div class="cell-label">Confidence Evolution</div>
-                <img id="conf-graph" class="hidden" alt="Confidence">
-                <div class="empty" id="conf-empty">Run an attack</div>
             </div>
             <div class="output-cell">
                 <div class="cell-label">Results</div>
@@ -764,6 +995,7 @@ let selectedMethod = 'SimBA';
 let selectedSource = 'standard';
 let selectedMode = 'untargeted';
 let selectedLoss = 'ce';
+let attackController = null; // AbortController for cancelling running attacks
 
 // Init
 async function init() {
@@ -780,6 +1012,7 @@ async function init() {
     await loadExamples();
     setupDropZone();
     setupListeners();
+    setupCompareSlider();
     await detectGPU();
     initTheme();
 }
@@ -920,16 +1153,10 @@ async function loadExamples() {
 async function loadExample(url, thumbEl) {
     const resp = await fetch(url);
     const blob = await resp.blob();
-    currentImage = new File([blob], url.split('/').pop(), { type: blob.type });
-    // Show preview
-    const preview = document.getElementById('input-preview');
-    preview.src = URL.createObjectURL(blob);
-    preview.classList.remove('hidden');
-    document.getElementById('upload-placeholder').classList.add('hidden');
-    // Highlight active example
-    document.querySelectorAll('.examples-row img').forEach(i => i.classList.remove('active'));
+    const file = new File([blob], url.split('/').pop(), { type: blob.type });
+    handleFile(file);
+    // Highlight active example (after handleFile clears all)
     if (thumbEl) thumbEl.classList.add('active');
-    await predictCurrent();
 }
 
 // Drop zone
@@ -942,7 +1169,9 @@ function setupDropZone() {
         zone.classList.remove('dragover');
         if (e.dataTransfer.files.length) handleFile(e.dataTransfer.files[0]);
     });
-    zone.addEventListener('click', () => {
+    zone.addEventListener('click', (e) => {
+        // Don't open file picker if comparison slider is visible
+        if (!document.getElementById('img-compare').classList.contains('hidden')) return;
         const input = document.createElement('input');
         input.type = 'file';
         input.accept = 'image/*';
@@ -952,13 +1181,26 @@ function setupDropZone() {
 }
 
 function handleFile(file) {
+    cancelAttack();
     currentImage = file;
     const preview = document.getElementById('input-preview');
     preview.src = URL.createObjectURL(file);
     preview.classList.remove('hidden');
     document.getElementById('upload-placeholder').classList.add('hidden');
+    // Reset comparison slider
+    document.getElementById('img-compare').classList.add('hidden');
+    // Reset outputs
+    resetOutputs();
     document.querySelectorAll('.examples-row img').forEach(i => i.classList.remove('active'));
     predictCurrent();
+}
+
+function resetOutputs() {
+    document.getElementById('conf-graph').classList.add('hidden');
+    document.getElementById('conf-empty').classList.remove('hidden');
+    document.getElementById('pert-img').classList.add('hidden');
+    document.getElementById('pert-empty').classList.remove('hidden');
+    document.getElementById('result-text').innerHTML = '';
 }
 
 // Predict
@@ -973,14 +1215,33 @@ async function predictCurrent() {
         const data = await resp.json();
         document.getElementById('prediction-text').innerHTML =
             `<strong>${data.label}</strong> (${(data.confidence * 100).toFixed(1)}%)`;
+        // Show center-cropped square from backend
+        if (data.image) {
+            document.getElementById('input-preview').src = 'data:image/png;base64,' + data.image;
+        }
     } catch(e) {
         document.getElementById('prediction-text').textContent = 'Prediction failed';
     }
 }
 
 // Attack
+function cancelAttack() {
+    if (attackController) {
+        attackController.abort();
+        attackController = null;
+    }
+    const btn = document.getElementById('run-btn');
+    btn.disabled = false;
+    btn.querySelector('.btn-text').textContent = 'Run Attack';
+    document.getElementById('spinner').classList.remove('active');
+    document.getElementById('drop-zone').classList.remove('glitching');
+}
+
 async function runAttack() {
     if (!currentImage) { alert('Please upload an image first.'); return; }
+
+    cancelAttack(); // cancel any previous
+    attackController = new AbortController();
 
     const btn = document.getElementById('run-btn');
     btn.disabled = true;
@@ -1003,14 +1264,25 @@ async function runAttack() {
     fd.append('seed', document.getElementById('seed-slider').value);
 
     try {
-        const resp = await fetch('/api/attack', { method: 'POST', body: fd });
+        const resp = await fetch('/api/attack', { method: 'POST', body: fd, signal: attackController.signal });
         const data = await resp.json();
 
-        setOutputImage('adv-img', 'adv-empty', data.adversarial_image);
+        // Show comparison slider in input panel
+        if (data.adversarial_image) {
+            document.getElementById('input-preview').classList.add('hidden');
+            const slider = document.getElementById('img-compare');
+            document.getElementById('compare-before').src = document.getElementById('input-preview').src;
+            document.getElementById('compare-after').src = 'data:image/png;base64,' + data.adversarial_image;
+            slider.classList.remove('hidden');
+            // Reset slider position
+            slider.style.setProperty('--clip-right', '50%');
+            slider.style.setProperty('--handle-left', '50%');
+        }
         setOutputImage('pert-img', 'pert-empty', data.perturbation_image);
         setOutputImage('conf-graph', 'conf-empty', data.confidence_graph);
         document.getElementById('result-text').innerHTML = renderResult(data.result_text);
     } catch(e) {
+        if (e.name === 'AbortError') return; // cancelled, do nothing
         document.getElementById('result-text').textContent = 'Error: ' + e.message;
     } finally {
         btn.disabled = false;
@@ -1064,7 +1336,7 @@ function setupListeners() {
     });
     setupCustomSelect('method-btn', 'method-panel', (val) => {
         selectedMethod = val;
-        document.getElementById('loss-group').classList.toggle('hidden', val !== 'Square Attack');
+        document.getElementById('loss-group').classList.toggle('enabled', val === 'Square Attack');
         updateOTState();
     });
 
@@ -1088,10 +1360,87 @@ function setupListeners() {
         updateOTState();
     });
 
-    // Target class label
-    document.getElementById('target-class').addEventListener('input', () => {
-        const idx = parseInt(document.getElementById('target-class').value) || 0;
-        document.getElementById('target-label').textContent = imagenetLabels[idx] || '';
+    // Target class counter
+    var targetVal = 42;
+    var flashTimeout = null;
+    function updateTargetDisplay() {
+        document.getElementById('target-val').textContent = targetVal;
+        document.getElementById('target-class').value = targetVal;
+        document.getElementById('target-label').textContent = imagenetLabels[targetVal] || '';
+        document.getElementById('target-down').disabled = (targetVal <= 0);
+        document.getElementById('target-up').disabled = (targetVal >= 999);
+    }
+    updateTargetDisplay();
+
+    function animateCounter(direction) {
+        var valEl = document.getElementById('target-val');
+        if (!valEl) return;
+        valEl.classList.remove('slide-up', 'slide-down');
+        void valEl.offsetHeight; // force reflow to restart animation
+        valEl.classList.add(direction === 'up' ? 'slide-up' : 'slide-down');
+    }
+
+    document.getElementById('target-up').addEventListener('click', () => {
+        if (targetVal >= 999) return;
+        targetVal++;
+        updateTargetDisplay();
+        animateCounter('up');
+        var counter = document.getElementById('num-counter');
+        var btn = document.getElementById('target-up');
+        counter.classList.remove('flash-down'); counter.classList.add('flash-up');
+        btn.classList.add('active-up');
+        clearTimeout(flashTimeout);
+        flashTimeout = setTimeout(() => {
+            counter.classList.remove('flash-up');
+            btn.classList.remove('active-up');
+        }, 500);
+    });
+
+    document.getElementById('target-down').addEventListener('click', () => {
+        if (targetVal <= 0) return;
+        targetVal--;
+        updateTargetDisplay();
+        animateCounter('down');
+        var counter = document.getElementById('num-counter');
+        var btn = document.getElementById('target-down');
+        counter.classList.remove('flash-up'); counter.classList.add('flash-down');
+        btn.classList.add('active-down');
+        clearTimeout(flashTimeout);
+        flashTimeout = setTimeout(() => {
+            counter.classList.remove('flash-down');
+            btn.classList.remove('active-down');
+        }, 500);
+    });
+
+    // Click number to edit manually (event delegation on container)
+    document.getElementById('num-counter').addEventListener('click', (e) => {
+        var valEl = document.getElementById('target-val');
+        if (!valEl || e.target !== valEl) return;
+        var input = document.createElement('input');
+        input.type = 'number';
+        input.className = 'num-counter-input';
+        input.id = 'target-val-input';
+        input.value = targetVal;
+        input.min = 0;
+        input.max = 999;
+        valEl.replaceWith(input);
+        input.focus();
+        input.select();
+
+        function confirmEdit() {
+            if (!document.getElementById('target-val-input')) return;
+            var v = parseInt(input.value);
+            if (isNaN(v)) v = targetVal;
+            targetVal = Math.max(0, Math.min(999, v));
+            var span = document.createElement('div');
+            span.className = 'num-counter-val';
+            span.id = 'target-val';
+            span.textContent = targetVal;
+            input.replaceWith(span);
+            updateTargetDisplay();
+        }
+        input.addEventListener('blur', confirmEdit);
+        input.addEventListener('keydown', (e) => { if (e.key === 'Enter') input.blur(); });
     });
 
     // Slider value displays
@@ -1127,9 +1476,33 @@ function updateOTState() {
     }
 }
 
+// Image comparison slider
+function setupCompareSlider() {
+    const container = document.getElementById('img-compare');
+    let dragging = false;
+
+    function updatePosition(clientX) {
+        const rect = container.getBoundingClientRect();
+        let pct = ((clientX - rect.left) / rect.width) * 100;
+        pct = Math.max(0, Math.min(100, pct));
+        container.style.setProperty('--clip-right', (100 - pct) + '%');
+        container.style.setProperty('--handle-left', pct + '%');
+    }
+
+    container.addEventListener('mousedown', (e) => { dragging = true; container.classList.add('dragging'); updatePosition(e.clientX); });
+    container.addEventListener('touchstart', (e) => { dragging = true; container.classList.add('dragging'); updatePosition(e.touches[0].clientX); });
+
+    window.addEventListener('mousemove', (e) => { if (dragging) updatePosition(e.clientX); });
+    window.addEventListener('touchmove', (e) => { if (dragging) updatePosition(e.touches[0].clientX); });
+
+    window.addEventListener('mouseup', () => { dragging = false; container.classList.remove('dragging'); });
+    window.addEventListener('touchend', () => { dragging = false; container.classList.remove('dragging'); });
+}
+
 // Theme toggle
 function initTheme() {
-    var currentTheme = localStorage.getItem('theme') || 'dark';
+    var stored = localStorage.getItem('theme');
+    var currentTheme = stored || (window.matchMedia('(prefers-color-scheme: light)').matches ? 'light' : 'dark');
     document.documentElement.setAttribute('data-theme', currentTheme);
     document.getElementById('themeToggle').addEventListener('click', function() {
         currentTheme = currentTheme === 'dark' ? 'light' : 'dark';

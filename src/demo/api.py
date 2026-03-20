@@ -9,6 +9,7 @@ import sys
 from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import FileResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
+import numpy as np
 from PIL import Image
 
 # Add project root to path
@@ -34,10 +35,44 @@ app.mount("/static", StaticFiles(directory=static_dir), name="static")
 app.mount("/data", StaticFiles(directory=data_dir), name="data")
 
 
+def center_crop_square(img: Image.Image) -> Image.Image:
+    """Crop the largest centered square from an image."""
+    w, h = img.size
+    s = min(w, h)
+    left = (w - s) // 2
+    top = (h - s) // 2
+    return img.crop((left, top, left + s, top + s))
+
+
 def pil_to_base64(img: Image.Image) -> str:
     buf = io.BytesIO()
     img.save(buf, format="PNG")
     return base64.b64encode(buf.getvalue()).decode()
+
+
+def upscale_adversarial(original_pil: Image.Image, adv_pil: Image.Image) -> Image.Image:
+    """Apply the 224x224 perturbation to the original full-res image.
+
+    Computes perturbation at 224x224, upscales each channel to the
+    original resolution via bilinear interpolation, applies to original.
+    """
+    orig_size = original_pil.size  # (W, H)
+    if orig_size == (224, 224):
+        return adv_pil
+
+    orig_224 = np.array(original_pil.resize((224, 224), Image.BILINEAR), dtype=np.float32)
+    adv_224 = np.array(adv_pil.resize((224, 224), Image.BILINEAR), dtype=np.float32)
+    pert_224 = adv_224 - orig_224  # float perturbation in [-255, 255]
+
+    # Upscale perturbation per channel (encode as uint8 with 128 offset for PIL resize)
+    pert_fullres = np.zeros((*original_pil.size[::-1], 3), dtype=np.float32)
+    for c in range(3):
+        encoded = ((pert_224[:, :, c] + 128).clip(0, 255)).astype(np.uint8)
+        upscaled = np.array(Image.fromarray(encoded).resize(orig_size, Image.BILINEAR), dtype=np.float32)
+        pert_fullres[:, :, c] = upscaled - 128.0
+
+    orig_arr = np.array(original_pil, dtype=np.float32)
+    return Image.fromarray(np.clip(orig_arr + pert_fullres, 0, 255).astype(np.uint8))
 
 
 @app.get("/")
@@ -82,11 +117,16 @@ async def predict(
     model_name: str = Form("resnet50"),
     source: str = Form("standard"),
 ):
-    pil_image = Image.open(io.BytesIO(await image.read())).convert("RGB")
+    pil_image = center_crop_square(Image.open(io.BytesIO(await image.read())).convert("RGB"))
     label, confidence, class_index = await asyncio.to_thread(
         predict_image, pil_image, model_name, source
     )
-    return {"label": label, "confidence": confidence, "class_index": class_index}
+    return {
+        "label": label,
+        "confidence": confidence,
+        "class_index": class_index,
+        "image": pil_to_base64(pil_image),
+    }
 
 
 @app.post("/api/attack")
@@ -104,7 +144,8 @@ async def attack(
     loss: str = Form("ce"),
     seed: int = Form(42),
 ):
-    pil_image = Image.open(io.BytesIO(await image.read())).convert("RGB")
+    pil_image = center_crop_square(Image.open(io.BytesIO(await image.read())).convert("RGB"))
+    original_fullres = pil_image.copy()
 
     epsilon = epsilon_n / 255.0
     targeted = mode == "targeted"
@@ -127,8 +168,15 @@ async def attack(
         seed,
     )
 
+    # Upscale adversarial to original resolution
+    adv_fullres = None
+    if adv_img:
+        adv_fullres = await asyncio.to_thread(
+            upscale_adversarial, original_fullres, adv_img
+        )
+
     return JSONResponse({
-        "adversarial_image": pil_to_base64(adv_img) if adv_img else None,
+        "adversarial_image": pil_to_base64(adv_fullres) if adv_fullres else None,
         "perturbation_image": pil_to_base64(pert_img) if pert_img else None,
         "confidence_graph": pil_to_base64(conf_graph) if conf_graph else None,
         "result_text": result_text or "",

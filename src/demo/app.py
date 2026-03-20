@@ -154,7 +154,7 @@ def create_confidence_graph(
     max_other_conf = confidence_history['max_other_class']
 
     # Create figure (compact for bento layout)
-    fig, ax = plt.subplots(figsize=(5, 3))
+    fig, ax = plt.subplots(figsize=(10, 6))
     ax.plot(iterations, original_conf, 'b-', label='True class', linewidth=1.5)
     ax.plot(iterations, max_other_conf, 'r--', label='Max other', linewidth=1.5)
 
@@ -200,10 +200,10 @@ def create_confidence_graph(
         target_iterations = iterations[:len(target_conf)]
         ax.plot(target_iterations, target_conf, 'g-', label='Target class', linewidth=1.5)
 
-    ax.set_xlabel('Iteration', fontsize=9)
-    ax.set_ylabel('Confidence', fontsize=9)
-    ax.tick_params(labelsize=8)
-    ax.legend(loc='best', fontsize=7)
+    ax.set_xlabel('Iteration', fontsize=14)
+    ax.set_ylabel('Confidence', fontsize=14)
+    ax.tick_params(labelsize=12)
+    ax.legend(loc='best', fontsize=12)
     ax.grid(True, alpha=0.3)
     ax.set_ylim([0, 1])
 
@@ -211,7 +211,7 @@ def create_confidence_graph(
 
     # Convert to PIL Image using BytesIO
     buf = io.BytesIO()
-    fig.savefig(buf, format='png', dpi=100, bbox_inches='tight')
+    fig.savefig(buf, format='png', dpi=150, bbox_inches='tight')
     buf.seek(0)
     img = Image.open(buf)
     plt.close(fig)
