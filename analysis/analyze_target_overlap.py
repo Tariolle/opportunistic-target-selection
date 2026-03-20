@@ -161,6 +161,8 @@ METHOD_COLORS = {
 
 def fig_overlap(results: pd.DataFrame, outdir: str, model_name: str):
     """Grouped bar chart: OTS and oracle overlap with clean-image top-K."""
+    # Exclude Bandits — OTS is redundant for gradient-estimation attacks
+    results = results[results["method"] != "Bandits"]
     methods = sorted(results["method"].unique())
     k_values = sorted(results["k"].unique())
 
