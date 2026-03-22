@@ -45,6 +45,7 @@ data/                   ImageNet class index and demo images
     ```
 
 3. **Access the interface**
+
     Open [http://127.0.0.1:7860](http://127.0.0.1:7860) in your browser.
 
 ---
