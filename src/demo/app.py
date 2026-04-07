@@ -433,7 +433,7 @@ def run_attack(
             f"**Original:** {original_class} ({original_label}) — {original_confidence:.2%}\n\n"
             f"**Result:** {adv_class} ({adv_label}) — {adv_confidence:.2%}\n\n"
             f"True: {original_confidence:.2%} → {final_true_confidence:.2%} ({loss_of_confidence:+.2%})\n\n"
-            f"L∞={linf:.4f} | L2={l2:.2f}"
+            f"L_inf_={linf:.4f} | L_2_={l2:.2f}"
         )
 
         return adv_image, perturbation_image, confidence_graph, result_text

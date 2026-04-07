@@ -645,10 +645,13 @@ input[type="range"]::-moz-range-track {
     display: flex;
     align-items: center;
     gap: 0.6rem;
-    font-size: 0.9rem;
+    font-size: 1.035rem;
     color: var(--text-muted);
 }
 .results-text .res-row strong { color: var(--text); font-weight: 500; }
+.results-text .res-row .norm { display: inline-flex; align-items: flex-start; font-family: 'JetBrains Mono', monospace; margin-right: -0.3em; }
+.results-text .res-row .norm .sub { font-size: 0.55em; align-self: flex-end; margin-bottom: -0.1em; }
+.results-text .res-row .norm .sub.sub-inf { font-size: 0.7em; }
 .results-text .res-dot {
     width: 16px; height: 16px;
     border-radius: 50%;
@@ -1374,8 +1377,11 @@ function renderResult(text) {
     for (var i = 1; i < lines.length; i++) {
         var line = lines[i]
             .replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>')
-            .replace(/L∞/g, 'L<sub>∞</sub>')
-            .replace(/L2/g, 'L<sub>2</sub>');
+            .replace(/L_(\w+?)_/g, function(_, s) {
+                var map = { 'inf': '∞', '2': '2' };
+                var cls = s === 'inf' ? 'sub sub-inf' : 'sub';
+                return '<span class="norm">L<span class="' + cls + '">' + (map[s] || s) + '</span></span>';
+            });
         html += '<div class="res-row">' + line + '</div>';
     }
     html += '</div>';
