@@ -4,7 +4,9 @@ Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks
 
 ## Overview
 
-**Opportunistic Target Selection (OTS)** is a lightweight wrapper that adds early target selection to any score-based black-box adversarial attack. It runs the attack in untargeted mode for a short exploration phase, then switches to a targeted objective against whichever non-true class currently leads. By acting as a margin-loss surrogate for attacks that lack implicit target tracking, OTS eliminates class drift without requiring architectural modification, gradient access, or a priori target-class knowledge.
+**Opportunistic Target Selection (OTS)** is a lightweight wrapper for score-based black-box adversarial attacks that lack implicit target tracking. It runs the attack in untargeted mode for a short exploration phase, then switches to a targeted objective against whichever non-true class currently leads. OTS acts as a margin-loss surrogate: it reduces class drift for probability- or cross-entropy-based random-search attacks without requiring architectural modification, gradient access, or a priori target-class knowledge.
+
+Across three score-based attacks and five standard ImageNet classifiers (4,500 runs), OTS closely tracks oracle targeting on drift-prone attacks, with gains up to +27 pp in success rate and 43% relative reduction in censored-mean iterations on ResNet-50. It is redundant for attacks that already provide directionality, such as Bandits or margin-loss Square Attack, and shows no benefit on adversarially-trained models where the difficulty distribution is bimodal.
 
 See [`paper/main.tex`](paper/main.tex) for the full paper.
 
