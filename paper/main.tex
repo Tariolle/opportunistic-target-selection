@@ -20,8 +20,10 @@
 \author[1,2]{Florian Yger}
 \affil[1]{INSA Rouen Normandy}
 \affil[2]{LITIS}
+\date{\vspace{-2.5em}}
 
 \begin{document}
+\nolinenumbers
 
 \maketitle
 
@@ -29,7 +31,7 @@
 \begin{abstract}
 Black-box adversarial attacks that minimize only the ground-truth confidence suffer from \textit{class drift}: perturbations wander through the feature space without committing to a specific adversarial class, wasting queries on diffuse, undirected progress. We introduce \textbf{Opportunistic Target Selection (OTS)}, a lightweight wrapper that switches an untargeted attack to a targeted objective early in its trajectory, locking onto whichever non-true class currently leads. OTS requires no architectural modification to the underlying attack, no gradient access, and no \textit{a priori} target-class knowledge.
 
-We validate OTS on three score-based attacks (SimBA, Square Attack with cross-entropy loss, and Bandits) across five standard ImageNet classifiers (4,500 runs). On random-search attacks, OTS closely tracks oracle performance, with gains up to +27~pp in success rate and 43\% relative reduction in censored-mean iterations on ResNet-50. On gradient-estimation attacks (Bandits) and attacks with margin loss, OTS is redundant, a negative result that reinforces our interpretation of OTS as a margin-loss surrogate. On adversarially-trained models, a bimodal difficulty distribution eliminates the regime where targeting helps.
+We validate OTS on three score-based attacks (SimBA, Square Attack with cross-entropy loss, and Bandits) across five standard ImageNet classifiers (4,500 runs). On random-search attacks, OTS closely tracks oracle performance, with gains up to +27~pp in success rate and 43\% relative reduction in censored-mean iterations on ResNet-50. On gradient-estimation attacks (Bandits) and attacks with margin loss, OTS is redundant, a negative result that reinforces our interpretation of OTS as a margin-loss surrogate. On adversarially-trained models, a bimodal difficulty distribution eliminates the regime where targeting helps. We release our code at \url{https://github.com/Tariolle/opportunistic-target-selection}.
 
 \medskip
 \keywords{Adversarial attacks, black-box, query efficiency, class drift}
@@ -37,7 +39,6 @@ We validate OTS on three score-based attacks (SimBA, Square Attack with cross-en
 
 % ============================================================================
 \section{Introduction}\label{sec:introduction}
-\marginpar{\tiny\begin{turn}{90}\url{https://github.com/Tariolle/opportunistic-target-selection}\end{turn}}
 
 Standard untargeted black-box attacks minimize the model's confidence in the ground-truth class. This strategy, whether implemented as probability minimization in SimBA \citep{guo2019simple} or cross-entropy loss in Square Attack \citep{andriushchenko2020square}, treats all non-true classes as interchangeable. The freed probability mass spreads across remaining classes without directional commitment; the perturbation executes a random walk through the latent space, crossing class basins opportunistically rather than heading toward a specific decision boundary.
 
