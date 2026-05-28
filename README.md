@@ -19,7 +19,7 @@ This repository accompanies the CAp 2026 paper:
 - Paper: [arXiv:2605.25663](https://arxiv.org/abs/2605.25663)
 - PDF: [arxiv.org/pdf/2605.25663](https://arxiv.org/pdf/2605.25663)
 - DOI: [10.48550/arXiv.2605.25663](https://doi.org/10.48550/arXiv.2605.25663)
-- Venue: accepted for presentation at [CAp 2026](https://caprfiap2026.sciencesconf.org/page/program_cap), as listed in the official CAp program
+- Venue: accepted as a poster at [CAp 2026](https://caprfiap2026.sciencesconf.org/page/program_cap), as listed in the official CAp program
 - Source: [`paper/main.tex`](paper/main.tex)
 
 ---
