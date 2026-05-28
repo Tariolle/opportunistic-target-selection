@@ -1,0 +1,27 @@
+cff-version: 1.2.0
+message: "If you use this code, results, or figures, please cite the paper."
+type: software
+title: "Opportunistic Target Selection: Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks"
+authors:
+  - family-names: Tariolle
+    given-names: Florent
+  - family-names: Yger
+    given-names: Florian
+repository-code: "https://github.com/Tariolle/opportunistic-target-selection"
+url: "https://arxiv.org/abs/2605.25663"
+doi: "10.48550/arXiv.2605.25663"
+date-released: "2026-05-25"
+license: MIT
+preferred-citation:
+  type: article
+  title: "Opportunistic Target Selection: Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks"
+  authors:
+    - family-names: Tariolle
+      given-names: Florent
+    - family-names: Yger
+      given-names: Florian
+  doi: "10.48550/arXiv.2605.25663"
+  url: "https://arxiv.org/abs/2605.25663"
+  journal: "arXiv preprint arXiv:2605.25663"
+  year: 2026
+  date-released: "2026-05-25"

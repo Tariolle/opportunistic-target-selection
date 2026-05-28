@@ -2,13 +2,24 @@
 
 Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks
 
+[![arXiv](https://img.shields.io/badge/arXiv-2605.25663-b31b1b.svg)](https://arxiv.org/abs/2605.25663)
+[![PDF](https://img.shields.io/badge/PDF-arXiv-red.svg)](https://arxiv.org/pdf/2605.25663)
+[![DOI](https://img.shields.io/badge/DOI-10.48550%2FarXiv.2605.25663-blue.svg)](https://doi.org/10.48550/arXiv.2605.25663)
+[![Venue](https://img.shields.io/badge/CAp-2026-2f855a.svg)](https://arxiv.org/abs/2605.25663)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+
 ## Overview
 
 **Opportunistic Target Selection (OTS)** is a lightweight wrapper for score-based black-box adversarial attacks that lack implicit target tracking. It runs the attack in untargeted mode for a short exploration phase, then switches to a targeted objective against whichever non-true class currently leads. OTS acts as a margin-loss surrogate: it reduces class drift for probability- or cross-entropy-based random-search attacks without requiring architectural modification, gradient access, or a priori target-class knowledge.
 
 Across three score-based attacks and five standard ImageNet classifiers (4,500 runs), OTS closely tracks oracle targeting on drift-prone attacks, with gains up to +27 pp in success rate and 43% relative reduction in censored-mean iterations on ResNet-50. It is redundant for attacks that already provide directionality, such as Bandits or margin-loss Square Attack, and shows no benefit on adversarially-trained models where the difficulty distribution is bimodal.
 
-See [`paper/main.tex`](paper/main.tex) for the full paper.
+This repository accompanies the CAp 2026 paper:
+
+- Paper: [arXiv:2605.25663](https://arxiv.org/abs/2605.25663)
+- PDF: [arxiv.org/pdf/2605.25663](https://arxiv.org/pdf/2605.25663)
+- DOI: [10.48550/arXiv.2605.25663](https://doi.org/10.48550/arXiv.2605.25663)
+- Source: [`paper/main.tex`](paper/main.tex)
 
 ---
 
@@ -54,6 +65,8 @@ data/                   ImageNet class index and demo images
 
 ## Benchmarks
 
+Benchmark scripts expect ImageNet validation images in ImageFolder layout at `data/imagenet/val/`, or a symlink at that path. The ImageNet images used for the paper are not redistributed in this repository; keep a local copy under that path before rerunning the benchmarks.
+
 | Script | Description |
 |--------|-------------|
 | `benchmarks/benchmark.py` | Multi-model benchmark: 5 standard models + 2 robust models, 3 attacks, 3 modes |
@@ -82,4 +95,21 @@ python analysis/analyze_ablation_naive.py
 python analysis/analyze_margin.py
 python analysis/analyze_lockmatch.py
 python analysis/analyze_oracle_beat.py
+```
+
+The benchmark CSVs and paper figures used for the arXiv version are included under `results/`.
+
+## Citation
+
+If you use this code, results, or figures, please cite:
+
+```bibtex
+@article{tariolle2026opportunistic,
+  title = {Opportunistic Target Selection: Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks},
+  author = {Tariolle, Florent and Yger, Florian},
+  journal = {arXiv preprint arXiv:2605.25663},
+  year = {2026},
+  doi = {10.48550/arXiv.2605.25663},
+  url = {https://arxiv.org/abs/2605.25663}
+}
 ```

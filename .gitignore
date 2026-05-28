@@ -2,6 +2,7 @@ __pycache__/
 .claude/
 /models/
 CLAUDE.md
+data/imagenet/val/
 
 # SLURM job artifacts
 error.*
