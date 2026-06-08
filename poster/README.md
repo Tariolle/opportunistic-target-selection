@@ -1,15 +1,13 @@
-# CAp 2026 Poster Drafts
+# CAp 2026 Poster
 
-Two A0 portrait poster drafts are provided for comparison:
+This directory contains the A0 portrait poster for the CAp 2026 presentation:
 
 - `poster_beamer.tex`: conventional `beamerposter` layout.
-- `poster_gemini.tex`: lightweight local Gemini-style layout.
 
-Compile both from this directory:
+Compile it from this directory:
 
 ```bash
 pdflatex -interaction=nonstopmode -halt-on-error poster_beamer.tex
-pdflatex -interaction=nonstopmode -halt-on-error poster_gemini.tex
 ```
 
 Or with `make`:
@@ -18,4 +16,4 @@ Or with `make`:
 make
 ```
 
-Both drafts reuse figures from `../results/`.
+The poster reuses figures from `../results/`.
