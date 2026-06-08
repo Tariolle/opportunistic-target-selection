@@ -243,20 +243,31 @@ def fig_headline_bars(df: pd.DataFrame, outdir: str, test_results=None):
             linewidth=0.5,
         )
 
-    # Annotate % savings (opportunistic vs untargeted)
+    # Annotate % change (opportunistic vs untargeted). Lower iterations are better.
     for j, method in enumerate(methods):
         u = agg[(agg["method"] == method) & (agg["mode"] == "untargeted")]["mean"].values
         o = agg[(agg["method"] == method) & (agg["mode"] == "opportunistic")]["mean"].values
         if len(u) and len(o) and u[0] > 0:
             savings = (u[0] - o[0]) / u[0] * 100
+            pct = (
+                rf"{abs(savings):.1f}\%"
+                if plt.rcParams.get("text.usetex", False)
+                else f"{abs(savings):.1f}%"
+            )
+            if savings >= 0:
+                label = f"\u2193 {pct}"
+                color = MODE_COLORS["opportunistic"]
+            else:
+                label = f"\u2191 {pct}"
+                color = "#D64541"
             y_pos = max(u[0], o[0]) + agg[(agg["method"] == method)]["ci"].max() + 80
             ax.annotate(
-                f"\u2193 {savings:.1f}\\%",
+                label,
                 xy=(x[j] + width, y_pos),
                 ha="center",
                 fontsize=11,
                 fontweight="bold",
-                color=MODE_COLORS["opportunistic"],
+                color=color,
             )
 
     # Significance brackets (pooled: pair on model+image, one test per method)

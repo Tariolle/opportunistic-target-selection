@@ -1,0 +1,102 @@
+\ProvidesPackage{beamerthemegemini}[2026/06/08 lightweight Gemini-style poster theme]
+
+\RequirePackage{tikz}
+\RequirePackage{etoolbox}
+\RequirePackage{ragged2e}
+
+\mode<presentation>
+
+\definecolor{geminiblue}{RGB}{18,64,104}
+\definecolor{geminicyan}{RGB}{0,121,145}
+\definecolor{geminigreen}{RGB}{28,136,113}
+\definecolor{geminilight}{RGB}{246,248,250}
+\definecolor{geminiink}{RGB}{29,36,45}
+\definecolor{geminimuted}{RGB}{92,106,120}
+\definecolor{geminiline}{RGB}{218,226,233}
+
+\setbeamercolor{normal text}{fg=geminiink,bg=white}
+\setbeamercolor{headline}{fg=white,bg=geminiblue}
+\setbeamercolor{headline rule}{fg=geminigreen,bg=geminigreen}
+\setbeamercolor{block title}{fg=geminiblue,bg=white}
+\setbeamercolor{block body}{fg=geminiink,bg=white}
+\setbeamercolor{block title alerted}{fg=white,bg=geminigreen}
+\setbeamercolor{block body alerted}{fg=geminiink,bg=geminilight}
+\setbeamercolor{block title example}{fg=white,bg=geminicyan}
+\setbeamercolor{block body example}{fg=geminiink,bg=geminilight}
+\setbeamercolor{item}{fg=geminigreen}
+\setbeamercolor{caption name}{fg=geminiblue}
+
+\setbeamerfont{headline title}{size=\Huge,series=\bfseries}
+\setbeamerfont{headline subtitle}{size=\Large}
+\setbeamerfont{headline author}{size=\large}
+\setbeamerfont{block title}{size=\Large,series=\bfseries}
+\setbeamerfont{block body}{size=\normalsize}
+
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{itemize item}{\raise0.25ex\hbox{\large$\blacktriangleright$}}
+\setbeamertemplate{itemize subitem}{\raise0.25ex\hbox{\small$\triangleright$}}
+
+\newlength{\geminimargin}
+\setlength{\geminimargin}{3.0cm}
+
+\setbeamertemplate{headline}{
+  \begin{beamercolorbox}[wd=\paperwidth,ht=12.2cm,dp=0cm]{headline}
+    \begin{tikzpicture}[remember picture,overlay]
+      \fill[geminiblue] (current page.north west) rectangle ([yshift=-12.2cm]current page.north east);
+      \fill[geminigreen] ([yshift=-12.2cm]current page.north west) rectangle ([yshift=-12.55cm]current page.north east);
+    \end{tikzpicture}
+    \vspace{1.8cm}
+    \hspace{\geminimargin}
+    \begin{minipage}{0.86\paperwidth}
+      {\usebeamerfont{headline title}\inserttitle\par}
+      \vspace{0.45cm}
+      {\usebeamerfont{headline subtitle}\insertsubtitle\par}
+      \vspace{0.7cm}
+      {\usebeamerfont{headline author}\insertauthor \quad | \quad \insertinstitute\par}
+    \end{minipage}
+  \end{beamercolorbox}
+}
+
+\setbeamertemplate{block begin}{
+  \vskip1.0ex
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.25ex,leftskip=0pt]{block title}
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}
+  \vspace{-0.2cm}
+  {\color{geminigreen}\rule{\linewidth}{0.16cm}}
+  \vspace{0.35cm}
+  \begin{beamercolorbox}[wd=\linewidth,sep=0pt]{block body}
+  \usebeamerfont{block body}\justifying
+}
+\setbeamertemplate{block end}{
+  \end{beamercolorbox}
+  \vskip1.35ex
+}
+
+\setbeamertemplate{block alerted begin}{
+  \vskip1.0ex
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=1.0ex,leftskip=0.8em]{block title alerted}
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=1.0ex,vmode]{block body alerted}
+  \usebeamerfont{block body}\justifying
+}
+\setbeamertemplate{block alerted end}{
+  \end{beamercolorbox}
+  \vskip1.35ex
+}
+
+\setbeamertemplate{block example begin}{
+  \vskip1.0ex
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=1.0ex,leftskip=0.8em]{block title example}
+    \usebeamerfont*{block title}\insertblocktitle
+  \end{beamercolorbox}
+  \begin{beamercolorbox}[rounded=true,shadow=false,sep=1.0ex,vmode]{block body example}
+  \usebeamerfont{block body}\justifying
+}
+\setbeamertemplate{block example end}{
+  \end{beamercolorbox}
+  \vskip1.35ex
+}
+
+\mode<all>
