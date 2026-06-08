@@ -1,6 +1,6 @@
 \documentclass[final]{beamer}
 
-\usepackage[size=a0,orientation=portrait,scale=1.22]{beamerposter}
+\usepackage[size=a0,orientation=portrait,scale=1.25]{beamerposter}
 \usepackage{amsmath,amssymb}
 \usepackage{booktabs}
 \usepackage{graphicx}
@@ -30,8 +30,8 @@
 \setlength{\postercontentwidth}{0.955\paperwidth}
 
 \newcommand{\sechead}[2]{%
-  \vspace{0.34cm}
-  \begin{beamercolorbox}[wd=\linewidth,sep=0.20cm,leftskip=0.24cm]{section title}
+  \vspace{0.40cm}
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.18cm,leftskip=0.24cm]{section title}
     {\Large\bfseries #1. #2}
   \end{beamercolorbox}
   \vspace{0.20cm}
@@ -39,7 +39,7 @@
 
 \newcommand{\bluebox}[1]{%
   \begingroup
-  \setlength{\fboxsep}{0.30cm}
+  \setlength{\fboxsep}{0.21cm}
   \setlength{\fboxrule}{1.1pt}
   \noindent\fcolorbox{posterblue}{white}{%
     \begin{minipage}{0.94\linewidth}
@@ -56,7 +56,13 @@
   \end{minipage}
 }
 
-\newcommand{\tightitems}{\setlength\itemsep{0.12em}\setlength\parskip{0pt}}
+\newcommand{\tightitems}{%
+  \setlength\itemsep{0.10em}%
+  \setlength\parskip{0pt}%
+  \setlength\parsep{0pt}%
+  \setlength\topsep{0pt}%
+  \setlength\partopsep{0pt}%
+}
 
 \title{Opportunistic Target Selection}
 \subtitle{Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks}
@@ -67,7 +73,7 @@
 \begin{frame}[t]
 \normalsize
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.14cm}
+\setlength{\parskip}{0.10cm}
 \justifying
 
 % Header.
@@ -111,18 +117,28 @@
 \begin{minipage}[t]{0.485\linewidth}
 
 \sechead{1}{Setup \& Motivation}
-Score-based black-box attacks observe the model probabilities but not gradients. Standard untargeted attacks reduce only the true-class confidence:
+Score-based black-box attacks see probabilities, not gradients. Standard untargeted losses mainly lower the true-class confidence:
 \[
 \mathcal{L}_{\mathrm{untarg}}(x',y)=P(y\mid x')\quad\text{or}\quad \log P(y\mid x').
 \]
-This objective frees probability mass without deciding which non-true class should receive it. The attack may therefore drift across several class basins before a misclassification is reached.
+\begin{itemize}
+  \tightitems
+  \item Probability mass is freed, but no non-true class is chosen.
+  \item The trajectory can drift across several class basins.
+  \item Query budget is wasted before misclassification.
+\end{itemize}
 
-\bluebox{\textbf{Goal.} Use the attack trajectory itself to choose a viable adversarial target, then commit early enough to avoid wasting queries on class drift.}
+\bluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid class drift.}
 
-\textbf{Why this gap exists.} Targeted attacks remove drift but require a target before the attack starts. Margin losses track a competitor dynamically, but many score-based attacks are implemented with probability or CE losses. OTS is a wrapper for exactly that case.
+\textbf{Gap.}
+\begin{itemize}
+  \tightitems
+  \item Targeted attacks need a target before the run starts.
+  \item CE/probability losses often do not track a competitor.
+\end{itemize}
 
 \sechead{2}{Method: Opportunistic Target Selection}
-OTS leaves the proposal mechanism unchanged. It modifies only the loss schedule after a short untargeted prefix.
+OTS keeps the proposal mechanism unchanged. Only the loss schedule changes after a short untargeted prefix.
 
 \bluebox{%
 \textbf{Algorithm.}
@@ -137,7 +153,11 @@ OTS leaves the proposal mechanism unchanged. It modifies only the loss schedule 
   \item Stop when the classifier prediction is no longer $y$.
 \end{enumerate}}
 
-The lock is deliberately irreversible. Releasing it would reintroduce the exploration overhead that OTS is meant to remove. Across fixed switches $T\in\{5,\ldots,500\}$, performance is statistically indistinguishable, so the useful class ranking stabilizes very early.
+\begin{itemize}
+  \tightitems
+  \item Irreversible lock: no repeated exploration.
+  \item Stable for $T\in\{5,\ldots,500\}$: rankings appear early.
+\end{itemize}
 
 \sechead{3}{Experimental Protocol}
 \begin{center}
@@ -153,7 +173,7 @@ Metrics & Success rate and censored mean iterations \\
 \end{tabular}
 \end{center}
 
-\bluebox{\textbf{Oracle target.} The oracle is the class reached by a same-seed untargeted probe. It is a trajectory-specific ceiling, not a deployable method.}
+\textbf{Oracle target:} same-seed untargeted endpoint, used as a trajectory-specific ceiling.
 
 \sechead{4}{When Should OTS Help?}
 \begin{center}
@@ -162,26 +182,31 @@ Metrics & Success rate and censored mean iterations \\
 Attack & Direction source & Expected OTS effect \\
 \midrule
 SimBA & No target tracking & Large gain from early commitment \\
-Square CE & CE suppresses $y$ only & Gain similar to a margin surrogate \\
+Square CE & $y$-only CE & Margin-like gain \\
 Bandits & Gradient estimate & Small or negative gain \\
 \bottomrule
 \end{tabular}
 \end{center}
 
-The negative Bandits case is part of the result, not a failure of tuning: once an attack already estimates a useful direction, imposing a fixed target can interfere with that direction.
+\begin{itemize}
+  \tightitems
+  \item Helps when the base loss drifts.
+  \item Can hurt when the base attack already has a direction.
+\end{itemize}
 
 \sechead{5}{Mechanism}
 \begin{center}
 \includegraphics[height=20.0cm,keepaspectratio]{fig_theta.pdf}
 \end{center}
 
-After lock-in, OTS aligns perturbations with the oracle direction. On SimBA/ResNet-50, terminal cosine similarity rises from $0.174$ for untargeted perturbations to $0.865$ for OTS.
-
-\textbf{Interpretation.} Once OTS fixes $t$, maximizing $P(t\mid x')$ approximates the competitor term of margin loss:
+\begin{itemize}
+  \tightitems
+  \item OTS aligns with the oracle direction: $0.174 \rightarrow 0.865$ cosine.
+  \item Fixed $t$ mimics the margin competitor:
+\end{itemize}
 \[
 \mathcal{L}_{\mathrm{margin}}=f_y(x')-\max_{k\neq y}f_k(x').
 \]
-OTS is therefore a lightweight margin-loss surrogate for attacks that do not already track a competitor.
 
 \sechead{6}{Target-Rule Ablation}
 \begin{center}
@@ -196,7 +221,11 @@ Short exploration & 80\% & 99\% \\
 \end{tabular}
 \end{center}
 
-Random targets are catastrophic. Clean-image rankings are already strong for SimBA, while Square Attack benefits from a short exploration phase because random patches disturb the initial ranking.
+\begin{itemize}
+  \tightitems
+  \item Random targets are catastrophic.
+  \item SimBA: clean ranking works; Square CE: short exploration helps.
+\end{itemize}
 
 \end{minipage}%
 \hfill%
@@ -227,16 +256,25 @@ Bandits & 37\% & 34\% & 35\% \\
 \end{tabular}
 \end{center}
 
-\bluebox{\textbf{Main finding.} OTS nearly matches the trajectory oracle for SimBA and Square Attack with CE loss, while Bandits gets worse because it already follows an estimated gradient direction.}
+\bluebox{%
+\textbf{Main finding.}
+\begin{itemize}
+  \tightitems
+  \item Near-oracle behavior for SimBA and Square CE.
+  \item Bandits gets worse: it already follows an estimated gradient.
+\end{itemize}}
 
 \sechead{8}{Lock-In Dynamics}
 \begin{center}
 \includegraphics[height=22.0cm,keepaspectratio,trim=0 45pt 436pt 24pt,clip]{fig_lockin.pdf}
 \end{center}
 
-In this ResNet-50 example, the faded untargeted trajectory suppresses the true class but then drifts. The vivid OTS trajectory locks onto class 988 and continues to increase that class until the attack succeeds.
-
-\bluebox{\textbf{Practical point.} OTS does not need the exact oracle class in every run; it only needs a viable class that remains competitive after lock-in.}
+\begin{itemize}
+  \tightitems
+  \item Untargeted: suppresses the true class, then drifts.
+  \item OTS: locks class 988 and keeps increasing it.
+  \item Only a stable competitive target is needed.
+\end{itemize}
 
 \sechead{9}{Loss Interpretation}
 \begin{center}
@@ -253,24 +291,40 @@ Margin + OTS & 98.7\% & 1,583 \\
 \end{tabular}
 \end{center}
 
-OTS repairs CE-style drift, but default margin loss already performs dynamic competitor tracking at every iteration. This explains why OTS is useful for CE variants and redundant for margin-based Square Attack.
+\begin{itemize}
+  \tightitems
+  \item CE drift is repaired by OTS.
+  \item Margin loss already tracks the competitor, so OTS is redundant.
+\end{itemize}
 
 \sechead{10}{Limits \& Future Work}
-On adversarially trained ImageNet models, success rates are flat across untargeted, oracle, and OTS. The issue is not bad target selection; robust models remove the medium-difficulty regime where directional commitment pays off.
+\begin{itemize}
+  \tightitems
+  \item Robust ImageNet models: flat success across variants.
+  \item No medium-difficulty regime where commitment pays off.
+\end{itemize}
 
-\bluebox{\textbf{Future work.} Test smaller-label regimes such as CIFAR-10, $L_2$ budgets, randomized defenses, and adaptive re-locking when the selected class drops in rank.}
+\textbf{Future work.}
+\begin{itemize}
+  \tightitems
+  \item CIFAR-10, $L_2$ budgets, randomized defenses.
+  \item Adaptive re-locking if the target drops in rank.
+\end{itemize}
 
 \sechead{11}{Takeaways \& Links}
 \bluebox{%
-\textbf{Take-away.} OTS is a small loss-schedule change: explore briefly, lock onto the strongest non-true class, then optimize that class. It helps drift-prone score attacks and exposes when an attack already has enough directional information.}
+\textbf{Take-away.}
+\begin{itemize}
+  \tightitems
+  \item Explore briefly.
+  \item Lock the strongest non-true class.
+  \item Useful only when the base attack drifts.
+\end{itemize}}
 
 {\footnotesize
 [1] Guo et al., \textit{Simple Black-box Adversarial Attacks}, ICML 2019.\par
 [2] Andriushchenko et al., \textit{Square Attack}, ECCV 2020.\par
 [3] Ilyas et al., \textit{Prior Convictions}, ICLR 2019.\par
-\vspace{0.08cm}
-\textbf{Paper:} \href{https://arxiv.org/abs/2605.25663}{arxiv.org/abs/2605.25663}\\
-\textbf{Code:} \href{https://github.com/Tariolle/opportunistic-target-selection}{github.com/Tariolle/opportunistic-target-selection}
 }
 
 \end{minipage}
