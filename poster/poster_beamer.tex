@@ -48,6 +48,19 @@
   \endgroup
 }
 
+\newcommand{\spacedbluebox}[1]{%
+  \vspace{0.34cm}
+  \begingroup
+  \setlength{\fboxsep}{0.34cm}
+  \setlength{\fboxrule}{1.1pt}
+  \noindent\fcolorbox{posterblue}{white}{%
+    \begin{minipage}{0.94\linewidth}
+    \color{ink}#1
+    \end{minipage}}%
+  \endgroup
+  \vspace{0.30cm}
+}
+
 \newcommand{\statbox}[2]{%
   \begin{minipage}[t]{0.31\linewidth}
     \centering
@@ -93,7 +106,7 @@
   {\LARGE\bfseries\color{posterblue}\insertsubtitle\par}
   \vspace{0.26cm}
   {\Large Florent Tariolle\textsuperscript{1} \quad Florian Yger\textsuperscript{1,2}\par}
-  {\large \textsuperscript{1}INSA Rouen Normandy \quad \textsuperscript{2}LITIS \quad -- \quad CAp 2026 A Poster\par}
+  {\large \textsuperscript{1}INSA Rouen Normandy \quad \textsuperscript{2}LITIS \quad -- \quad CAp 2026 Poster\par}
 \end{minipage}
 \hfill
 \begin{minipage}[c]{0.16\linewidth}
@@ -128,7 +141,7 @@ Score-based black-box attacks see probabilities, not gradients. Standard untarge
   \item Query budget is wasted before misclassification.
 \end{itemize}
 
-\bluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid class drift.}
+\spacedbluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid class drift.}
 
 \textbf{Gap.}
 \begin{itemize}
@@ -140,7 +153,7 @@ Score-based black-box attacks see probabilities, not gradients. Standard untarge
 \sechead{2}{Method: Opportunistic Target Selection}
 OTS keeps the proposal mechanism unchanged. Only the loss schedule changes after a short untargeted prefix.
 
-\bluebox{%
+\spacedbluebox{%
 \textbf{Algorithm.}
 \begin{enumerate}
   \tightitems
