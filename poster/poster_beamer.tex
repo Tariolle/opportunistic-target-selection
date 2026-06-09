@@ -30,16 +30,16 @@
 \setlength{\postercontentwidth}{0.955\paperwidth}
 
 \newcommand{\sechead}[2]{%
-  \vspace{0.40cm}
-  \begin{beamercolorbox}[wd=\linewidth,sep=0.18cm,leftskip=0.24cm]{section title}
+  \vspace{0.46cm}
+  \begin{beamercolorbox}[wd=\linewidth,sep=0.19cm,leftskip=0.24cm]{section title}
     {\Large\bfseries #1. #2}
   \end{beamercolorbox}
-  \vspace{0.20cm}
+  \vspace{0.24cm}
 }
 
 \newcommand{\bluebox}[1]{%
   \begingroup
-  \setlength{\fboxsep}{0.21cm}
+  \setlength{\fboxsep}{0.23cm}
   \setlength{\fboxrule}{1.1pt}
   \noindent\fcolorbox{posterblue}{white}{%
     \begin{minipage}{0.94\linewidth}
@@ -57,7 +57,7 @@
 }
 
 \newcommand{\tightitems}{%
-  \setlength\itemsep{0.10em}%
+  \setlength\itemsep{0.13em}%
   \setlength\parskip{0pt}%
   \setlength\parsep{0pt}%
   \setlength\topsep{0pt}%
@@ -73,7 +73,7 @@
 \begin{frame}[t]
 \normalsize
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{0.10cm}
+\setlength{\parskip}{0.12cm}
 \justifying
 
 % Header.
@@ -196,7 +196,7 @@ Bandits & Gradient estimate & Small or negative gain \\
 
 \sechead{5}{Mechanism}
 \begin{center}
-\includegraphics[height=20.0cm,keepaspectratio]{fig_theta.pdf}
+\includegraphics[height=21.4cm,keepaspectratio]{fig_theta.pdf}
 \end{center}
 
 \begin{itemize}
@@ -233,10 +233,10 @@ Short exploration & 80\% & 99\% \\
 
 \sechead{7}{Main Results}
 \begin{center}
-\includegraphics[height=20.0cm,keepaspectratio]{fig_headline_bars.pdf}
+\includegraphics[height=22.0cm,keepaspectratio]{fig_headline_bars.pdf}
 \end{center}
 
-\vspace{-0.12cm}
+\vspace{0.05cm}
 \begin{center}
 \begin{tabular}{@{}lccc@{}}
 \toprule
@@ -266,7 +266,7 @@ Bandits & 37\% & 34\% & 35\% \\
 
 \sechead{8}{Lock-In Dynamics}
 \begin{center}
-\includegraphics[height=22.0cm,keepaspectratio,trim=0 45pt 436pt 24pt,clip]{fig_lockin.pdf}
+\includegraphics[height=23.6cm,keepaspectratio,trim=0 45pt 436pt 24pt,clip]{fig_lockin.pdf}
 \end{center}
 
 \begin{itemize}
@@ -311,7 +311,7 @@ Margin + OTS & 98.7\% & 1,583 \\
   \item Adaptive re-locking if the target drops in rank.
 \end{itemize}
 
-\sechead{11}{Takeaways \& Links}
+\sechead{11}{Takeaways}
 \bluebox{%
 \textbf{Take-away.}
 \begin{itemize}
@@ -320,12 +320,6 @@ Margin + OTS & 98.7\% & 1,583 \\
   \item Lock the strongest non-true class.
   \item Useful only when the base attack drifts.
 \end{itemize}}
-
-{\footnotesize
-[1] Guo et al., \textit{Simple Black-box Adversarial Attacks}, ICML 2019.\par
-[2] Andriushchenko et al., \textit{Square Attack}, ECCV 2020.\par
-[3] Ilyas et al., \textit{Prior Convictions}, ICLR 2019.\par
-}
 
 \end{minipage}
 \end{minipage}}
