@@ -141,7 +141,7 @@ Score-based black-box attacks see probabilities, not gradients. Standard untarge
   \item Query budget is wasted before misclassification.
 \end{itemize}
 
-\spacedbluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid class drift.}
+\spacedbluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid drift.}
 
 \textbf{Gap.}
 \begin{itemize}
@@ -246,11 +246,12 @@ Short exploration & 80\% & 99\% \\
 
 \sechead{7}{Main Results}
 \begin{center}
-\includegraphics[height=22.0cm,keepaspectratio]{fig_headline_bars.pdf}
+\includegraphics[height=23.1cm,keepaspectratio]{fig_headline_bars.pdf}
 \end{center}
 
 \vspace{0.05cm}
 \begin{center}
+\scalebox{1.05}{%
 \begin{tabular}{@{}lccc@{}}
 \toprule
 Attack & Untargeted & OTS & Oracle \\
@@ -259,14 +260,15 @@ SimBA & 67\% & \textbf{75\%} & 76\% \\
 Square CE & 96\% & \textbf{99\%} & 99\% \\
 Bandits & 37\% & 34\% & 35\% \\
 \bottomrule
-\end{tabular}
+\end{tabular}}
 \end{center}
 
 \begin{center}
+\scalebox{1.05}{%
 \begin{tabular}{@{}>{\centering\arraybackslash}p{0.29\linewidth}>{\centering\arraybackslash}p{0.29\linewidth}>{\centering\arraybackslash}p{0.29\linewidth}@{}}
 {\bfseries\color{postergreen}+27 pp} & {\bfseries\color{postergreen}43\%} & {\bfseries\color{postergreen}0} \\
 {\scriptsize SimBA success on ResNet-50} & {\scriptsize relative iteration reduction} & {\scriptsize gradient access} \\
-\end{tabular}
+\end{tabular}}
 \end{center}
 
 \bluebox{%
