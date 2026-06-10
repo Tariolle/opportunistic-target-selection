@@ -1,0 +1,45 @@
+name: Poster PDF
+
+on:
+  pull_request:
+    paths:
+      - ".github/workflows/poster.yml"
+      - "poster/**"
+      - "results/figures/standard/fig_headline_bars.pdf"
+      - "results/figures/standard/fig_lockin.pdf"
+      - "results/figures_theta/fig_theta.pdf"
+  push:
+    paths:
+      - ".github/workflows/poster.yml"
+      - "poster/**"
+      - "results/figures/standard/fig_headline_bars.pdf"
+      - "results/figures/standard/fig_lockin.pdf"
+      - "results/figures_theta/fig_theta.pdf"
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Build poster
+        uses: xu-cheng/latex-action@v3
+        env:
+          SOURCE_DATE_EPOCH: "0"
+          FORCE_SOURCE_DATE: "1"
+        with:
+          working_directory: poster
+          root_file: poster_beamer.tex
+          latexmk_use_xelatex: false
+          args: -pdf -interaction=nonstopmode -halt-on-error
+
+      - name: Verify committed PDF is current
+        shell: bash
+        run: |
+          if ! git diff --quiet -- poster/poster_beamer.pdf; then
+            echo "poster/poster_beamer.pdf is not current. Run 'make -C poster' and commit the regenerated PDF."
+            git diff --stat -- poster/poster_beamer.pdf
+            exit 1
+          fi

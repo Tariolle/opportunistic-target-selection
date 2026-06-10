@@ -17,3 +17,6 @@ make
 ```
 
 The poster reuses figures from `../results/`.
+
+GitHub Actions rebuilds the poster on poster or figure changes and fails if
+`poster_beamer.pdf` is not consistent with the committed sources.
