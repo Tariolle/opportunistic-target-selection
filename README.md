@@ -6,6 +6,7 @@ Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks
 [![PDF](https://img.shields.io/badge/PDF-arXiv-red.svg)](https://arxiv.org/pdf/2605.25663)
 [![DOI](https://img.shields.io/badge/DOI-10.48550%2FarXiv.2605.25663-blue.svg)](https://doi.org/10.48550/arXiv.2605.25663)
 [![Venue](https://img.shields.io/badge/CAp-2026-2f855a.svg)](https://caprfiap2026.sciencesconf.org/page/program_cap)
+[![Poster](https://img.shields.io/badge/Poster-CAp%202026-2b428f.svg)](poster/poster_beamer.pdf)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 ## Overview
