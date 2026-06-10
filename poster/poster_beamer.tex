@@ -28,6 +28,8 @@
 
 \newlength{\postercontentwidth}
 \setlength{\postercontentwidth}{0.955\paperwidth}
+\newlength{\posterheadervpad}
+\setlength{\posterheadervpad}{1.05cm}
 
 \newcommand{\sechead}[2]{%
   \vspace{0.46cm}
@@ -38,6 +40,7 @@
 }
 
 \newcommand{\bluebox}[1]{%
+  \vspace{0.18cm}
   \begingroup
   \setlength{\fboxsep}{0.23cm}
   \setlength{\fboxrule}{1.1pt}
@@ -46,6 +49,7 @@
     \color{ink}#1
     \end{minipage}}%
   \endgroup
+  \vspace{0.18cm}
 }
 
 \newcommand{\spacedbluebox}[1]{%
@@ -59,6 +63,15 @@
     \end{minipage}}%
   \endgroup
   \vspace{0.30cm}
+}
+
+\newcommand{\subhead}[1]{%
+  \vspace{0.14cm}
+  \noindent\textbf{#1}\par\vspace{0.04cm}
+}
+
+\newcommand{\boxsubhead}[1]{%
+  \noindent\textbf{#1}\par\vspace{0.04cm}
 }
 
 \newcommand{\statbox}[2]{%
@@ -92,14 +105,14 @@
 % Header.
 \noindent\makebox[\paperwidth][c]{%
 \begin{minipage}{\postercontentwidth}
-\vspace{0.55cm}
-\begin{minipage}[c]{0.20\linewidth}
+\vspace*{\posterheadervpad}
+\begin{minipage}[c]{0.22\linewidth}
   \centering
-  \includegraphics[width=11.2cm]{school_logo.png}\\[0.28cm]
-  \includegraphics[width=7.2cm]{logo_LITIS_cropped.png}
+  \includegraphics[width=15.14cm]{school_logo.png}\\[0.28cm]
+  \includegraphics[width=9.25cm]{logo_LITIS_cropped.png}
 \end{minipage}
 \hfill
-\begin{minipage}[c]{0.58\linewidth}
+\begin{minipage}[c]{0.56\linewidth}
   \centering
   {\Huge\bfseries\color{posterblue}\inserttitle\par}
   \vspace{0.20cm}
@@ -111,13 +124,12 @@
 \hfill
 \begin{minipage}[c]{0.16\linewidth}
   \hfill
-  \begin{minipage}{7.6cm}
+  \begin{minipage}{9.58cm}
     \centering
-    \includegraphics[width=\linewidth]{arxiv_qr.png}\\[-0.05cm]
-    {\small\href{https://arxiv.org/abs/2605.25663}{arXiv:2605.25663}}
+    \includegraphics[width=\linewidth]{arxiv_qr.png}
   \end{minipage}
 \end{minipage}
-\vspace{0.38cm}
+\vspace*{\posterheadervpad}
 \end{minipage}}
 
 \vspace{0.10cm}
@@ -129,11 +141,20 @@
 \noindent%
 \begin{minipage}[t]{0.485\linewidth}
 
-\sechead{1}{Setup \& Motivation}
+\sechead{1}{Motivation: Realistic Black-Box Attacks}
+\bluebox{%
+\boxsubhead{Why black-box?}
+\begin{itemize}
+  \tightitems
+  \item Real attackers rarely know the model weights, architecture, or gradients.
+  \item Many deployed systems still expose scores, confidence values, or ranked labels.
+  \item Query-efficient score-based attacks are therefore the closest setting to a practical threat model.
+\end{itemize}}
 Score-based black-box attacks see probabilities, not gradients. Standard untargeted losses mainly lower the true-class confidence:
 \[
 \mathcal{L}_{\mathrm{untarg}}(x',y)=P(y\mid x')\quad\text{or}\quad \log P(y\mid x').
 \]
+\vspace{-0.32cm}
 \begin{itemize}
   \tightitems
   \item Probability mass is freed, but no non-true class is chosen.
@@ -143,18 +164,18 @@ Score-based black-box attacks see probabilities, not gradients. Standard untarge
 
 \spacedbluebox{\textbf{Goal.} Pick a viable target from the trajectory, then commit early to avoid drift.}
 
-\textbf{Gap.}
+\subhead{Gap.}
 \begin{itemize}
   \tightitems
   \item Targeted attacks need a target before the run starts.
-  \item CE/probability losses often do not track a competitor.
+  \item Untargeted CE/probability losses do not decide which competitor should take over.
 \end{itemize}
 
 \sechead{2}{Method: Opportunistic Target Selection}
 OTS keeps the proposal mechanism unchanged. Only the loss schedule changes after a short untargeted prefix.
 
 \spacedbluebox{%
-\textbf{Algorithm.}
+\boxsubhead{Algorithm.}
 \begin{enumerate}
   \tightitems
   \item Run the original untargeted attack for $T$ iterations.
@@ -169,6 +190,7 @@ OTS keeps the proposal mechanism unchanged. Only the loss schedule changes after
 \begin{itemize}
   \tightitems
   \item Irreversible lock: no repeated exploration.
+  \item Target choice matters: random targets fail; the leading class after a short prefix is viable.
   \item Stable for $T\in\{5,\ldots,500\}$: rankings appear early.
 \end{itemize}
 
@@ -188,7 +210,7 @@ Metrics & Success rate and censored mean iterations \\
 
 \textbf{Oracle target:} same-seed untargeted endpoint, used as a trajectory-specific ceiling.
 
-\sechead{4}{When Should OTS Help?}
+\sechead{4}{When and Why OTS Helps}
 \begin{center}
 \begin{tabular}{@{}p{0.21\linewidth}p{0.23\linewidth}p{0.42\linewidth}@{}}
 \toprule
@@ -207,52 +229,32 @@ Bandits & Gradient estimate & Small or negative gain \\
   \item Can hurt when the base attack already has a direction.
 \end{itemize}
 
-\sechead{5}{Mechanism}
 \begin{center}
-\includegraphics[height=21.4cm,keepaspectratio]{fig_theta.pdf}
+\includegraphics[height=22.88cm,keepaspectratio]{fig_theta.pdf}
 \end{center}
 
 \begin{itemize}
   \tightitems
-  \item OTS aligns with the oracle direction: $0.174 \rightarrow 0.865$ cosine.
+  \item Mechanism: OTS turns early score information into a fixed direction.
   \item Fixed $t$ mimics the margin competitor:
 \end{itemize}
 \[
 \mathcal{L}_{\mathrm{margin}}=f_y(x')-\max_{k\neq y}f_k(x').
 \]
 
-\sechead{6}{Target-Rule Ablation}
-\begin{center}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Target rule & SimBA & Square CE \\
-\midrule
-Random non-true class & 14\% & 53\% \\
-Clean-image argmax & 79\% & 96\% \\
-Short exploration & 80\% & 99\% \\
-\bottomrule
-\end{tabular}
-\end{center}
-
-\begin{itemize}
-  \tightitems
-  \item Random targets are catastrophic.
-  \item SimBA: clean ranking works; Square CE: short exploration helps.
-\end{itemize}
-
 \end{minipage}%
 \hfill%
 \begin{minipage}[t]{0.485\linewidth}
 
-\sechead{7}{Main Results}
+\sechead{5}{Main Results}
+\vspace{-0.42cm}
 \begin{center}
-\includegraphics[height=23.1cm,keepaspectratio]{fig_headline_bars.pdf}
+\includegraphics[height=25.41cm,keepaspectratio]{fig_headline_bars.pdf}
 \end{center}
 
 \vspace{0.05cm}
 \begin{center}
-\scalebox{1.05}{%
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular*}{0.90\linewidth}{@{\extracolsep{\fill}}lccc@{}}
 \toprule
 Attack & Untargeted & OTS & Oracle \\
 \midrule
@@ -260,28 +262,30 @@ SimBA & 67\% & \textbf{75\%} & 76\% \\
 Square CE & 96\% & \textbf{99\%} & 99\% \\
 Bandits & 37\% & 34\% & 35\% \\
 \bottomrule
-\end{tabular}}
+\end{tabular*}
 \end{center}
 
+\vspace{0.20cm}
 \begin{center}
-\scalebox{1.05}{%
-\begin{tabular}{@{}>{\centering\arraybackslash}p{0.29\linewidth}>{\centering\arraybackslash}p{0.29\linewidth}>{\centering\arraybackslash}p{0.29\linewidth}@{}}
-{\bfseries\color{postergreen}+27 pp} & {\bfseries\color{postergreen}43\%} & {\bfseries\color{postergreen}0} \\
+\scalebox{1.328}{%
+\begin{tabular}{@{}>{\centering\arraybackslash}p{0.25\linewidth}>{\centering\arraybackslash}p{0.25\linewidth}>{\centering\arraybackslash}p{0.25\linewidth}@{}}
+\raisebox{0pt}[0pt][0pt]{\scalebox{1.05}{\bfseries\color{postergreen}+27 pp}} & \raisebox{0pt}[0pt][0pt]{\scalebox{1.05}{\bfseries\color{postergreen}43\%}} & \raisebox{0pt}[0pt][0pt]{\scalebox{1.05}{\bfseries\color{postergreen}0}} \\
 {\scriptsize SimBA success on ResNet-50} & {\scriptsize relative iteration reduction} & {\scriptsize gradient access} \\
 \end{tabular}}
 \end{center}
 
 \bluebox{%
-\textbf{Main finding.}
+\boxsubhead{Main finding.}
 \begin{itemize}
   \tightitems
   \item Near-oracle behavior for SimBA and Square CE.
   \item Bandits gets worse: it already follows an estimated gradient.
 \end{itemize}}
 
-\sechead{8}{Lock-In Dynamics}
+\sechead{6}{Lock-In Dynamics}
+\vspace{-0.62cm}
 \begin{center}
-\includegraphics[height=23.6cm,keepaspectratio,trim=0 45pt 436pt 24pt,clip]{fig_lockin.pdf}
+\includegraphics[height=25.96cm,keepaspectratio,trim=0 45pt 436pt 24pt,clip]{fig_lockin.pdf}
 \end{center}
 
 \begin{itemize}
@@ -291,50 +295,29 @@ Bandits & 37\% & 34\% & 35\% \\
   \item Only a stable competitive target is needed.
 \end{itemize}
 
-\sechead{9}{Loss Interpretation}
-\begin{center}
-\begin{tabular}{@{}lcc@{}}
-\toprule
-Square Attack, ResNet-50 & Success & Mean iter. \\
-\midrule
-CE untargeted & 85.0\% & 2,601 \\
-CE + OTS & 98.0\% & 1,791 \\
-CE oracle & 99.0\% & 1,865 \\
-Margin untargeted & 98.7\% & 1,453 \\
-Margin + OTS & 98.7\% & 1,583 \\
-\bottomrule
-\end{tabular}
-\end{center}
-
+\sechead{7}{Limits and Takeaways}
+\bluebox{%
+\boxsubhead{Take-away.}
 \begin{itemize}
   \tightitems
-  \item CE drift is repaired by OTS.
-  \item Margin loss already tracks the competitor, so OTS is redundant.
-\end{itemize}
+  \item Explore briefly, then lock the strongest non-true class.
+  \item The gain comes from avoiding class drift under score-only feedback.
+  \item OTS is useful when the base attack lacks a stable direction; it can hurt when the attack already follows one.
+\end{itemize}}
 
-\sechead{10}{Limits \& Future Work}
+\subhead{Current limits.}
 \begin{itemize}
   \tightitems
   \item Robust ImageNet models: flat success across variants.
   \item No medium-difficulty regime where commitment pays off.
 \end{itemize}
 
-\textbf{Future work.}
+\subhead{Future work.}
 \begin{itemize}
   \tightitems
   \item CIFAR-10, $L_2$ budgets, randomized defenses.
   \item Adaptive re-locking if the target drops in rank.
 \end{itemize}
-
-\sechead{11}{Takeaways}
-\bluebox{%
-\textbf{Take-away.}
-\begin{itemize}
-  \tightitems
-  \item Explore briefly.
-  \item Lock the strongest non-true class.
-  \item Useful only when the base attack drifts.
-\end{itemize}}
 
 \end{minipage}
 \end{minipage}}
