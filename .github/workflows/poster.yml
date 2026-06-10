@@ -23,6 +23,8 @@ jobs:
     steps:
       - name: Check out repository
         uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
 
       - name: Build poster
         uses: xu-cheng/latex-action@v3
@@ -35,11 +37,28 @@ jobs:
           latexmk_use_xelatex: false
           args: -pdf -interaction=nonstopmode -halt-on-error
 
-      - name: Verify committed PDF is current
+      - name: Verify committed PDF was updated with poster sources
         shell: bash
         run: |
-          if ! git diff --quiet -- poster/poster_beamer.pdf; then
-            echo "poster/poster_beamer.pdf is not current. Run 'make -C poster' and commit the regenerated PDF."
-            git diff --stat -- poster/poster_beamer.pdf
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            base="${{ github.event.pull_request.base.sha }}"
+            head="${{ github.event.pull_request.head.sha }}"
+          else
+            base="${{ github.event.before }}"
+            head="${{ github.sha }}"
+          fi
+
+          if [[ "$base" =~ ^0+$ ]]; then
+            echo "Skipping committed-PDF update check for initial branch push."
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only "$base" "$head")"
+          poster_sources='^(poster/(poster_beamer\.tex|school_logo\.png|logo_LITIS_cropped\.png|arxiv_qr\.png)|results/figures/standard/(fig_headline_bars|fig_lockin)\.pdf|results/figures_theta/fig_theta\.pdf)$'
+
+          if grep -Eq "$poster_sources" <<< "$changed_files" &&
+             ! grep -Fxq "poster/poster_beamer.pdf" <<< "$changed_files"; then
+            echo "poster/poster_beamer.pdf was not updated with changed poster sources."
+            echo "Run 'make -C poster' and commit the regenerated PDF."
             exit 1
           fi
