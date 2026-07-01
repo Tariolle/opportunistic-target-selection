@@ -1,24 +1,14 @@
 # Opportunistic Target Selection
+### Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks
 
-Early Directional Commitment for Query-Efficient Black-Box Adversarial Attacks
+[Florent Tariolle](https://tariolle.github.io/) and [Florian Yger](https://scholar.google.com/citations?user=NF_1_38AAAAJ)
 
-[![arXiv](https://img.shields.io/badge/arXiv-2605.25663-b31b1b.svg)](https://arxiv.org/abs/2605.25663)
-[![Poster](https://img.shields.io/badge/Poster-CAp%202026-405B8C.svg)](poster/poster_beamer.pdf)
-[![License: MIT](https://img.shields.io/badge/License-MIT-6B7280.svg)](LICENSE)
+**Abstract:** Black-box adversarial attacks that minimize only the ground-truth confidence suffer from class drift: perturbations wander through the feature space without committing to a specific adversarial class, wasting queries on diffuse, undirected progress. We introduce Opportunistic Target Selection (OTS), a lightweight wrapper that switches an untargeted attack to a targeted objective early in its trajectory, locking onto whichever non-true class currently leads. OTS requires no architectural modification to the underlying attack, no gradient access, and no a priori target-class knowledge.
 
-## Overview
-
-**Opportunistic Target Selection (OTS)** is a lightweight wrapper for score-based black-box adversarial attacks that lack implicit target tracking. It runs the attack in untargeted mode for a short exploration phase, then switches to a targeted objective against whichever non-true class currently leads. OTS acts as a margin-loss surrogate: it reduces class drift for probability- or cross-entropy-based random-search attacks without requiring architectural modification, gradient access, or a priori target-class knowledge.
-
-Across three score-based attacks and five standard ImageNet classifiers (4,500 runs), OTS closely tracks oracle targeting on drift-prone attacks, with gains up to +27 pp in success rate and 43% relative reduction in censored-mean iterations on ResNet-50. It is redundant for attacks that already provide directionality, such as Bandits or margin-loss Square Attack, and shows no benefit on adversarially-trained models where the difficulty distribution is bimodal.
-
-This repository accompanies the CAp 2026 paper:
-
-- Paper: [arXiv:2605.25663](https://arxiv.org/abs/2605.25663)
-- PDF: [arxiv.org/pdf/2605.25663](https://arxiv.org/pdf/2605.25663)
-- DOI: [10.48550/arXiv.2605.25663](https://doi.org/10.48550/arXiv.2605.25663)
-- Venue: accepted as a poster at [CAp 2026](https://caprfiap2026.sciencesconf.org/page/program_cap), as listed in the official CAp program
-- Source: [`paper/main.tex`](paper/main.tex)
+<div align="center">
+  <strong>[ <a href="https://arxiv.org/abs/2605.25663">Paper</a> | <a href="poster/poster_beamer.pdf">Poster</a> ]</strong><br>
+  <strong>Accepted as a poster at <a href="https://caprfiap2026.sciencesconf.org/page/program_cap">CAp 2026</a></strong><br>
+</div>
 
 ---
 
